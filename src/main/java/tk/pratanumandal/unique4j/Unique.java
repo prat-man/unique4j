@@ -34,30 +34,82 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
+/**
+ * The <code>Unique</code> class is the logical entry point to the library.<br>
+ * It allows to create an application lock or free it and send and receive messages between first and subsequent instances.<br><br>
+ * 
+ * <pre>
+ *	// unique application ID
+ *	String APP_ID = "tk.pratanumandal.unique-mlsdvo-20191511-#j.6";
+ *	
+ *	// create unique instance
+ *	Unique unique = new Unique(APP_ID) {
+ *	&nbsp;&nbsp;&nbsp;&nbsp;&#64;Override
+ *	&nbsp;&nbsp;&nbsp;&nbsp;public void receiveMessage(String message) {
+ *	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// print received message (timestamp)
+ *	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(message);
+ *	&nbsp;&nbsp;&nbsp;&nbsp;}
+ *	&nbsp;&nbsp;&nbsp;&nbsp;
+ *	&nbsp;&nbsp;&nbsp;&nbsp;&#64;Override
+ *	&nbsp;&nbsp;&nbsp;&nbsp;public String sendMessage() {
+ *	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// send timestamp as message
+ *	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Timestamp ts = new Timestamp(new Date().getTime());
+ *	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return "Another instance launch attempted: " + ts.toString();
+ *	&nbsp;&nbsp;&nbsp;&nbsp;}
+ *	};
+ *	
+ *	// try to lock
+ *	unique.lock();
+ *	
+ *	...
+ *	
+ *	// try to free the lock before exiting program
+ *	unique.free();
+ * </pre>
+ * 
+ * @author Pratanu Mandal
+ * @since 1.0
+ *
+ */
 public abstract class Unique {
 	
-	// application ID
-	public final String APP_ID;
-	
 	// starting position of port check
-	public static final int PORT_START = 3000;
+	private static final int PORT_START = 3000;
 	
 	// system temporary directory path
 	private static final String TEMP_DIR = System.getProperty("java.io.tmpdir");
 	
+	/**
+	 * Unique string representing the application ID.
+	 * 
+	 * The APP_ID must be as unique as possible.
+	 * Avoid generic names like "my_app_id" or "hello_world".
+	 * A good strategy is to use the entire package name (group ID + artifact ID) along with some random characters.
+	 */
+	public final String APP_ID;
+	
 	// lock server port
-	protected int port;
+	private int port;
 	
 	// lock server socket
-	protected ServerSocket server;
+	private ServerSocket server;
 
-	// parameterized constructor
+	/**
+	 * Parameterized constructor.
+	 * 
+	 * The APP_ID must be as unique as possible.
+	 * Avoid generic names like "my_app_id" or "hello_world".
+	 * A good strategy is to use the entire package name (group ID + artifact ID) along with some random characters.
+	 * 
+	 * @param APP_ID Unique string representing the application ID
+	 */
 	public Unique(String APP_ID) {
 		this.APP_ID = APP_ID;
 	}
 	
-	// try to obtain lock
-	// if not possible, send data to first instance
+	/**
+	 * Try to obtain lock. If not possible, send data to first instance.
+	 */
 	public void lock() {
 		port = lockFile();
 		
@@ -70,7 +122,7 @@ public abstract class Unique {
 	}
 	
 	// start the server
-	protected void startServer() {
+	private void startServer() {
 		// try to create server
 		port = PORT_START;
 		while (true) {
@@ -85,7 +137,7 @@ public abstract class Unique {
 		if (lockFile(port)) {
 			// server created successfully; this is the first instance
 			// keep listening for data from other instances
-			Thread thread = new Thread(new Runnable() {
+			Thread thread = new Thread() {
 				@Override
 				public void run() {
 					while (!server.isClosed()) {
@@ -126,7 +178,7 @@ public abstract class Unique {
 						}
 					}
 				}
-			});
+			};
 			
 			thread.start();
 		}
@@ -136,7 +188,7 @@ public abstract class Unique {
 	}
 	
 	// do client tasks
-	protected void doClient() {
+	private void doClient() {
 		// establish connection
 		InetAddress address = null;
 		try {
@@ -196,7 +248,7 @@ public abstract class Unique {
 	}
 	
 	// try to get port from lock file
-	protected int lockFile() {
+	private int lockFile() {
 		// lock file path
 		String filePath = TEMP_DIR + "/" + APP_ID + ".lock";
 		File file = new File(filePath);
@@ -223,7 +275,7 @@ public abstract class Unique {
 	}
 	
 	// try to write port to lock file
-	protected boolean lockFile(int port) {
+	private boolean lockFile(int port) {
 		// lock file path
 		String filePath = TEMP_DIR + "/" + APP_ID + ".lock";
 		File file = new File(filePath);
@@ -246,31 +298,41 @@ public abstract class Unique {
 		}
 	}
 	
-	// free the lock if possible
-	protected void free() {
+	/**
+	 * Free the lock if possible. This is only required to be called from the first instance.
+	 */
+	public void free() {
 		try {
 			// close server socket
 			if (server != null) {
 				server.close();
-			}
 			
-			// lock file path
-			String filePath = TEMP_DIR + "/" + APP_ID + ".lock";
-			File file = new File(filePath);
-			
-			// try to delete lock file
-			if (file.exists()) {
-				file.delete();
+				// lock file path
+				String filePath = TEMP_DIR + "/" + APP_ID + ".lock";
+				File file = new File(filePath);
+				
+				// try to delete lock file
+				if (file.exists()) {
+					file.delete();
+				}
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 	
-	// message received by first instance
+	/**
+	 * Method used in first instance to receive messages from subsequent instances.
+	 * 
+	 * @param message message received by first instance from subsequent instances
+	 */
 	public abstract void receiveMessage(String message);
 	
-	// message sent by subsequent instances
+	/**
+	 * Method used in subsequent instances to send message to first instance.
+	 * 
+	 * @return message sent from subsequent instances
+	 */
 	public abstract String sendMessage();
 	
 }

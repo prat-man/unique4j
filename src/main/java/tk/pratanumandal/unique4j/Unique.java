@@ -44,7 +44,7 @@ import java.nio.channels.FileLock;
  * 
  * <pre>
  *	// unique application ID
- *	String APP_ID = "tk.pratanumandal.unique-mlsdvo-20191511-#j.6";
+ *	String APP_ID = "tk.pratanumandal.unique4j-mlsdvo-20191511-#j.6";
  *	
  *	// create unique instance
  *	Unique unique = new Unique(APP_ID) {

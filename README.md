@@ -4,7 +4,7 @@ Java library to allow only single instance of a java application to run and enab
 ## Sample Usage
 
     // unique application ID
-    String APP_ID = "tk.pratanumandal.unique-mlsdvo-20191511-#j.6";
+    String APP_ID = "tk.pratanumandal.unique4j-mlsdvo-20191511-#j.6";
 
     // create unique instance
     Unique unique = new Unique(APP_ID) {

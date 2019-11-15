@@ -102,6 +102,9 @@ public abstract class Unique {
 	 */
 	public final String APP_ID;
 	
+	// auto exit from application or not
+	private final boolean AUTO_EXIT;
+	
 	// lock server port
 	private int port;
 	
@@ -119,20 +122,37 @@ public abstract class Unique {
 	 * 
 	 * The APP_ID must be as unique as possible.
 	 * Avoid generic names like "my_app_id" or "hello_world".<br>
-	 * A good strategy is to use the entire package name (group ID + artifact ID) along with some random characters.
+	 * A good strategy is to use the entire package name (group ID + artifact ID) along with some random characters.<br>
+	 * This constructor configures to automatically exit the application for subsequent instances.
 	 * 
 	 * @param APP_ID Unique string representing the application ID
 	 */
-	public Unique(String APP_ID) {
+	public Unique(final String APP_ID) {
+		this(APP_ID, true);
+	}
+	
+	/**
+	 * Parameterized constructor.<br><br>
+	 * 
+	 * The APP_ID must be as unique as possible.
+	 * Avoid generic names like "my_app_id" or "hello_world".<br>
+	 * A good strategy is to use the entire package name (group ID + artifact ID) along with some random characters.
+	 * 
+	 * @param APP_ID Unique string representing the application ID
+	 * @param AUTO_EXIT If true, automatically exit the application for subsequent instances
+	 */
+	public Unique(final String APP_ID, final boolean AUTO_EXIT) {
 		this.APP_ID = APP_ID;
+		this.AUTO_EXIT = AUTO_EXIT;
 	}
 	
 	/**
 	 * Try to obtain lock. If not possible, send data to first instance.
 	 * 
+	 * @return true if able to acquire lock, false otherwise
 	 * @throws Unique4jException throws Unique4jException if it is unable to start a server or connect to server
 	 */
-	public void lock() throws Unique4jException {
+	public boolean lock() throws Unique4jException {
 		// try to obtain port number from lock file
 		port = lockFile();
 		
@@ -146,6 +166,8 @@ public abstract class Unique {
 			// try to start client
 			doClient();
 		}
+		
+		return (server != null);
 	}
 	
 	// start the server
@@ -275,8 +297,13 @@ public abstract class Unique {
 		        br.close();
 		        
 		        if (response.equals(APP_ID)) {
-		        	// validation successful, exit this instance
-					System.exit(0);
+		        	// validation successful
+		        	if (AUTO_EXIT) {
+		        		// perform pre-exit tasks
+			        	beforeExit();
+			        	// exit this instance
+		        		System.exit(0);
+		        	}
 		        }
 		        else {
 		        	// validation failed, this is the first instance
@@ -360,9 +387,10 @@ public abstract class Unique {
 	/**
 	 * Free the lock if possible. This is only required to be called from the first instance.
 	 * 
+	 * @return true if able to release lock, false otherwise
 	 * @throws Unique4jException throws Unique4jException if it is unable to stop the server or release file lock
 	 */
-	public void free() throws Unique4jException {
+	public boolean free() throws Unique4jException {
 		try {
 			// close server socket
 			if (server != null) {
@@ -386,7 +414,11 @@ public abstract class Unique {
 				if (file.exists()) {
 					file.delete();
 				}
+				
+				return true;
 			}
+			
+			return false;
 		} catch (IOException e) {
 			throw new Unique4jException(e);
 		}
@@ -418,5 +450,13 @@ public abstract class Unique {
 	public void handleException(Exception exception) {
 		exception.printStackTrace();
 	}
+	
+	/**
+	 * This method is called before exiting from subsequent instances.<br>
+	 * Override this method to perform blocking tasks before exiting from subsequent instances.<br>
+	 * This method is not invoked if auto exit is turned off.<br>
+	 * This method is not synchronized.
+	 */
+	public void beforeExit() {}
 	
 }

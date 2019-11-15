@@ -21,11 +21,19 @@ Java library to allow only single instance of a java application to run and enab
             return "Another instance launch attempted: " + ts.toString();
         }
     };
-
-    // try to lock
-    unique.lock();
-
+    
+    // try to obtain lock
+    try {
+        unique.lock();
+    } catch (Unique4jException e) {
+        e.printStackTrace();
+    }
+    
     ...
-
+    
     // try to free the lock before exiting program
-    unique.free();
+    try {
+        unique.free();
+    } catch (Unique4jException e) {
+        e.printStackTrace();
+    }

@@ -66,7 +66,7 @@ import tk.pratanumandal.unique4j.exception.Unique4jException;
  *	
  *	// try to obtain lock
  *	try {
- *	&nbsp;&nbsp;&nbsp;&nbsp;unique.lock();
+ *	&nbsp;&nbsp;&nbsp;&nbsp;unique.acquireLock();
  *	} catch (Unique4jException e) {
  *	&nbsp;&nbsp;&nbsp;&nbsp;e.printStackTrace();
  *	}
@@ -75,7 +75,7 @@ import tk.pratanumandal.unique4j.exception.Unique4jException;
  *	
  *	// try to free the lock before exiting program
  *	try {
- *	&nbsp;&nbsp;&nbsp;&nbsp;unique.free();
+ *	&nbsp;&nbsp;&nbsp;&nbsp;unique.freeLock();
  *	} catch (Unique4jException e) {
  *	&nbsp;&nbsp;&nbsp;&nbsp;e.printStackTrace();
  *	}
@@ -139,6 +139,8 @@ public abstract class Unique {
 	 * A good strategy is to use the entire package name (group ID + artifact ID) along with some random characters.<br>
 	 * This constructor allows to explicitly specify the exit strategy for subsequent instances.
 	 * 
+	 * @since 1.2
+	 * 
 	 * @param APP_ID Unique string representing the application ID
 	 * @param AUTO_EXIT If true, automatically exit the application for subsequent instances
 	 */
@@ -160,6 +162,8 @@ public abstract class Unique {
 	
 	/**
 	 * Try to obtain lock. If not possible, send data to first instance.
+	 * 
+	 * @since 1.2
 	 * 
 	 * @return true if able to acquire lock, false otherwise
 	 * @throws Unique4jException throws Unique4jException if it is unable to start a server or connect to server
@@ -410,6 +414,8 @@ public abstract class Unique {
 	/**
 	 * Free the lock if possible. This is only required to be called from the first instance.
 	 * 
+	 * @since 1.2
+	 * 
 	 * @return true if able to release lock, false otherwise
 	 * @throws Unique4jException throws Unique4jException if it is unable to stop the server or release file lock
 	 */
@@ -479,6 +485,8 @@ public abstract class Unique {
 	 * Override this method to perform blocking tasks before exiting from subsequent instances.<br>
 	 * This method is not invoked if auto exit is turned off.<br>
 	 * This method is not synchronized.
+	 * 
+	 * @since 1.2
 	 */
 	public void beforeExit() {}
 	

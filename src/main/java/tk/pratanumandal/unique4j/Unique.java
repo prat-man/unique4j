@@ -58,13 +58,21 @@ import java.net.UnknownHostException;
  *	&nbsp;&nbsp;&nbsp;&nbsp;}
  *	};
  *	
- *	// try to lock
- *	unique.lock();
+ *	// try to obtain lock
+ *	try {
+ *	&nbsp;&nbsp;&nbsp;&nbsp;unique.lock();
+ *	} catch (Unique4jException e) {
+ *	&nbsp;&nbsp;&nbsp;&nbsp;e.printStackTrace();
+ *	}
  *	
  *	...
  *	
  *	// try to free the lock before exiting program
- *	unique.free();
+ *	try {
+ *	&nbsp;&nbsp;&nbsp;&nbsp;unique.free();
+ *	} catch (Unique4jException e) {
+ *	&nbsp;&nbsp;&nbsp;&nbsp;e.printStackTrace();
+ *	}
  * </pre>
  * 
  * @author Pratanu Mandal
@@ -109,7 +117,8 @@ public abstract class Unique {
 	
 	/**
 	 * Try to obtain lock. If not possible, send data to first instance.
-	 * @throws Unique4jException 
+	 * 
+	 * @throws Unique4jException throws Unique4jException if it is unable to start a server or connect to server
 	 */
 	public void lock() throws Unique4jException {
 		port = lockFile();
@@ -298,7 +307,8 @@ public abstract class Unique {
 	
 	/**
 	 * Free the lock if possible. This is only required to be called from the first instance.
-	 * @throws Unique4jException 
+	 * 
+	 * @throws Unique4jException throws Unique4jException if it is unable to stop the server or release file lock
 	 */
 	public void free() throws Unique4jException {
 		try {

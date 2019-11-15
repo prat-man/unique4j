@@ -207,7 +207,7 @@ public abstract class Unique {
 	
 	// do client tasks
 	private void doClient() throws Unique4jException {
-		// establish connection
+		// get localhost address
 		InetAddress address = null;
 		try {
 			address = InetAddress.getByName(null);
@@ -219,48 +219,54 @@ public abstract class Unique {
 		try {
 			// try to establish connection to server
 			socket = new Socket(address, port);
-			
-			// get message to be sent to first instance
-			String message = sendMessage();
-			if (message == null) message = new String();
-			
-			// open writer
-			OutputStream os = socket.getOutputStream();
-			PrintWriter pw = new PrintWriter(os, true);
-			
-			// open reader
-			InputStream is = socket.getInputStream();
-            InputStreamReader isr = new InputStreamReader(is);
-            BufferedReader br = new BufferedReader(isr);
-	        
-            // write message to server
-	        pw.write(message + "\r\n");
-	        pw.flush();
-	        
-	        // read response from server
-	        String response = br.readLine();
-	        if (response == null) response = new String();
-	        
-	        // close writer and reader
-	        pw.close();
-	        br.close();
-	        
-	        if (response.equals(APP_ID)) {
-	        	// validation successful, exit this instance
-				System.exit(0);
-	        }
-	        else {
-	        	// validation failed, this is the first instance
-	        	startServer();
-	        }
 		} catch (IOException e) {
 			startServer();
-		} finally {
-			// close socket
-	     	try {
-	     		if (socket != null) socket.close();
+		}
+		
+		if (socket != null) {
+			try {
+				// get message to be sent to first instance
+				String message = sendMessage();
+				if (message == null) message = new String();
+				
+				// open writer
+				OutputStream os = socket.getOutputStream();
+				PrintWriter pw = new PrintWriter(os, true);
+				
+				// open reader
+				InputStream is = socket.getInputStream();
+	            InputStreamReader isr = new InputStreamReader(is);
+	            BufferedReader br = new BufferedReader(isr);
+		        
+	            // write message to server
+		        pw.write(message + "\r\n");
+		        pw.flush();
+		        
+		        // read response from server
+		        String response = br.readLine();
+		        if (response == null) response = new String();
+		        
+		        // close writer and reader
+		        pw.close();
+		        br.close();
+		        
+		        if (response.equals(APP_ID)) {
+		        	// validation successful, exit this instance
+					System.exit(0);
+		        }
+		        else {
+		        	// validation failed, this is the first instance
+		        	startServer();
+		        }
 			} catch (IOException e) {
 				throw new Unique4jException(e);
+			} finally {
+				// close socket
+		     	try {
+		     		if (socket != null) socket.close();
+				} catch (IOException e) {
+					throw new Unique4jException(e);
+				}
 			}
 		}
 	}

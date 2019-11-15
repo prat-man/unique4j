@@ -21,6 +21,7 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,11 +29,14 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.RandomAccessFile;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
 
 /**
  * The <code>Unique</code> class is the logical entry point to the library.<br>
@@ -101,6 +105,10 @@ public abstract class Unique {
 	
 	// lock server socket
 	private ServerSocket server;
+	
+	private RandomAccessFile lockRAF;
+	
+	private FileLock fileLock;
 
 	/**
 	 * Parameterized constructor.
@@ -303,6 +311,17 @@ public abstract class Unique {
 				throw new Unique4jException(e);
 			}
 		}
+		
+		// try to obtain file lock
+		try {
+			lockRAF = new RandomAccessFile(file, "rw");
+			FileChannel fc = lockRAF.getChannel();
+			fileLock = fc.lock(0, Long.MAX_VALUE, true);
+		} catch (FileNotFoundException e) {
+			throw new Unique4jException(e);
+		} catch (IOException e) {
+			throw new Unique4jException(e);
+		}
 	}
 	
 	/**
@@ -319,6 +338,10 @@ public abstract class Unique {
 				// lock file path
 				String filePath = TEMP_DIR + "/" + APP_ID + ".lock";
 				File file = new File(filePath);
+				
+				// try to release file lock
+				fileLock.release();
+				lockRAF.close();
 				
 				// try to delete lock file
 				if (file.exists()) {

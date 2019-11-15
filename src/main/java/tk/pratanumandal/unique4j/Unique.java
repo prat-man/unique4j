@@ -399,7 +399,7 @@ public abstract class Unique {
 	/**
 	 * Free the lock if possible. This is only required to be called from the first instance.
 	 * 
-	 * @deprecated use freeLock() instead
+	 * @deprecated Use freeLock() instead
 	 * @throws Unique4jException throws Unique4jException if it is unable to stop the server or release file lock
 	 */
 	@Deprecated

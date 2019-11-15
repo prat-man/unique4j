@@ -38,6 +38,8 @@ import java.net.UnknownHostException;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 
+import tk.pratanumandal.unique4j.exception.Unique4jException;
+
 /**
  * The <code>Unique</code> class is the logical entry point to the library.<br>
  * It allows to create an application lock or free it and send and receive messages between first and subsequent instances.<br><br>
@@ -92,10 +94,10 @@ public abstract class Unique {
 	private static final String TEMP_DIR = System.getProperty("java.io.tmpdir");
 	
 	/**
-	 * Unique string representing the application ID.
+	 * Unique string representing the application ID.<br><br>
 	 * 
 	 * The APP_ID must be as unique as possible.
-	 * Avoid generic names like "my_app_id" or "hello_world".
+	 * Avoid generic names like "my_app_id" or "hello_world".<br>
 	 * A good strategy is to use the entire package name (group ID + artifact ID) along with some random characters.
 	 */
 	public final String APP_ID;
@@ -113,10 +115,10 @@ public abstract class Unique {
 	private FileLock fileLock;
 
 	/**
-	 * Parameterized constructor.
+	 * Parameterized constructor.<br><br>
 	 * 
 	 * The APP_ID must be as unique as possible.
-	 * Avoid generic names like "my_app_id" or "hello_world".
+	 * Avoid generic names like "my_app_id" or "hello_world".<br>
 	 * A good strategy is to use the entire package name (group ID + artifact ID) along with some random characters.
 	 * 
 	 * @param APP_ID Unique string representing the application ID
@@ -170,34 +172,47 @@ public abstract class Unique {
 				while (!server.isClosed()) {
 					try {
 						// establish connection
-						Socket socket = server.accept();
+						final Socket socket = server.accept();
 						
-						// open writer
-						OutputStream os = socket.getOutputStream();
-						PrintWriter pw = new PrintWriter(os, true);
+						// handle socket on a different thread to allow parallel connections
+						Thread thread = new Thread() {
+							@Override
+							public void run() {
+								try {
+									// open writer
+									OutputStream os = socket.getOutputStream();
+									PrintWriter pw = new PrintWriter(os, true);
+									
+									// open reader
+									InputStream is = socket.getInputStream();
+						            InputStreamReader isr = new InputStreamReader(is);
+						            BufferedReader br = new BufferedReader(isr);
+						            
+						            // read message from client
+						            String message = br.readLine();
+						            if (message == null) message = new String();
+						            
+						            // write response to client
+						            pw.write(APP_ID + "\r\n");
+						            pw.flush();
+						            
+						            // close writer and reader
+						            pw.close();
+							        br.close();
+									
+						            // perform user action on message
+									receiveMessage(message);
+									
+									// close socket
+									socket.close();
+								} catch (IOException e) {
+									handleException(new Unique4jException(e));
+								}
+							}
+						};
 						
-						// open reader
-						InputStream is = socket.getInputStream();
-			            InputStreamReader isr = new InputStreamReader(is);
-			            BufferedReader br = new BufferedReader(isr);
-			            
-			            // read message from client
-			            String message = br.readLine();
-			            if (message == null) message = new String();
-			            
-			            // write response to client
-			            pw.write(APP_ID + "\r\n");
-			            pw.flush();
-			            
-			            // close writer and reader
-			            pw.close();
-				        br.close();
-						
-			            // perform user action on message
-						receiveMessage(message);
-						
-						// close socket
-						socket.close();
+						// start socket thread
+						thread.start();
 					} catch (SocketException e) {
 						if (!server.isClosed()) {
 							handleException(new Unique4jException(e));
@@ -331,7 +346,10 @@ public abstract class Unique {
 		try {
 			lockRAF = new RandomAccessFile(file, "rw");
 			FileChannel fc = lockRAF.getChannel();
-			fileLock = fc.lock(0, Long.MAX_VALUE, true);
+			fileLock = fc.tryLock(0, Long.MAX_VALUE, true);
+			if (fileLock == null) {
+				throw new Unique4jException("Failed to obtain file lock");
+			}
 		} catch (FileNotFoundException e) {
 			throw new Unique4jException(e);
 		} catch (IOException e) {
@@ -375,23 +393,25 @@ public abstract class Unique {
 	}
 	
 	/**
-	 * Method used in first instance to receive messages from subsequent instances.
+	 * Method used in first instance to receive messages from subsequent instances.<br>
+	 * This method is not synchronized.
 	 * 
 	 * @param message message received by first instance from subsequent instances
 	 */
 	public abstract void receiveMessage(String message);
 	
 	/**
-	 * Method used in subsequent instances to send message to first instance.
+	 * Method used in subsequent instances to send message to first instance.<br>
+	 * This method is not synchronized.
 	 * 
 	 * @return message sent from subsequent instances
 	 */
 	public abstract String sendMessage();
 	
 	/**
-	 * Method to receive and handle exceptions occurring while first instance is listening for subsequent instances.
-	 * 
-	 * By default prints stack trace of all exceptions. Override this method to change handle explicitly.
+	 * Method to receive and handle exceptions occurring while first instance is listening for subsequent instances.<br>
+	 * By default prints stack trace of all exceptions. Override this method to change handle explicitly.<br>
+	 * This method is not synchronized.
 	 * 
 	 * @param exception exception occurring while first instance is listening for subsequent instances
 	 */

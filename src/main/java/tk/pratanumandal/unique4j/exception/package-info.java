@@ -16,10 +16,10 @@
  */
 
 /**
- * The <code>tk.pratanumandal.unique4j</code> package is the root package of Unique4j library.
+ * The <code>tk.pratanumandal.unique4j.exception</code> package contains exception classes of Unique4j library.
  * 
  * @author Pratanu Mandal
- * @since 1.0
+ * @since 1.1
  *
  */
-package tk.pratanumandal.unique4j;
+package tk.pratanumandal.unique4j.exception;

@@ -15,13 +15,13 @@
  * 
  */
 
-package tk.pratanumandal.unique4j;
+package tk.pratanumandal.unique4j.exception;
 
 /**
  * The <code>Unique4jException</code> class is a wrapper for all exceptions thrown from Unique4j.
  * 
  * @author Pratanu Mandal
- * @since 1.0
+ * @since 1.1
  *
  */
 public class Unique4jException extends Exception {

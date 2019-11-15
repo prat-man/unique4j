@@ -19,6 +19,8 @@ package tk.pratanumandal.unique4j;
 
 import org.junit.Test;
 
+import tk.pratanumandal.unique4j.exception.Unique4jException;
+
 public class Unique4jTest {
 	
     @Test

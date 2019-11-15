@@ -24,7 +24,7 @@ Java library to allow only single instance of a java application to run and enab
     
     // try to obtain lock
     try {
-        unique.lock();
+        unique.acquireLock();
     } catch (Unique4jException e) {
         e.printStackTrace();
     }
@@ -33,7 +33,7 @@ Java library to allow only single instance of a java application to run and enab
     
     // try to free the lock before exiting program
     try {
-        unique.free();
+        unique.freeLock();
     } catch (Unique4jException e) {
         e.printStackTrace();
     }

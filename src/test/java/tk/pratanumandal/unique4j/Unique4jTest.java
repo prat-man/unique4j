@@ -40,10 +40,10 @@ public class Unique4jTest {
 		};
 		
 		// try to obtain lock
-		unique.lock();
+		unique.acquireLock();
 		
 		// try to free the lock before exiting program
-		unique.free();
+		unique.freeLock();
 		
     }
     

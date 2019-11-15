@@ -109,8 +109,9 @@ public abstract class Unique {
 	
 	/**
 	 * Try to obtain lock. If not possible, send data to first instance.
+	 * @throws Unique4jException 
 	 */
-	public void lock() {
+	public void lock() throws Unique4jException {
 		port = lockFile();
 		
 		if (port == -1) {
@@ -122,7 +123,7 @@ public abstract class Unique {
 	}
 	
 	// start the server
-	private void startServer() {
+	private void startServer() throws Unique4jException {
 		// try to create server
 		port = PORT_START;
 		while (true) {
@@ -134,67 +135,67 @@ public abstract class Unique {
 			}
 		}
 		
-		if (lockFile(port)) {
-			// server created successfully; this is the first instance
-			// keep listening for data from other instances
-			Thread thread = new Thread() {
-				@Override
-				public void run() {
-					while (!server.isClosed()) {
-						try {
-							// establish connection
-							Socket socket = server.accept();
-							
-							// open writer
-							OutputStream os = socket.getOutputStream();
-							PrintWriter pw = new PrintWriter(os, true);
-							
-							// open reader
-							InputStream is = socket.getInputStream();
-				            InputStreamReader isr = new InputStreamReader(is);
-				            BufferedReader br = new BufferedReader(isr);
-				            
-				            // read message from client
-				            String message = br.readLine();
-				            if (message == null) message = new String();
-				            
-				            // write response to client
-				            pw.write(APP_ID + "\r\n");
-				            pw.flush();
-				            
-				            // close writer and reader
-				            pw.close();
-					        br.close();
-							
-				            // perform user action on message
-							receiveMessage(message);
-							
-							// close socket
-							socket.close();
-						} catch (SocketException e1) {
-							// do nothing
-						} catch (IOException e2) {
-							e2.printStackTrace();
+		// try to lock file
+		lockFile(port);
+		
+		// server created successfully; this is the first instance
+		// keep listening for data from other instances
+		Thread thread = new Thread() {
+			@Override
+			public void run() {
+				while (!server.isClosed()) {
+					try {
+						// establish connection
+						Socket socket = server.accept();
+						
+						// open writer
+						OutputStream os = socket.getOutputStream();
+						PrintWriter pw = new PrintWriter(os, true);
+						
+						// open reader
+						InputStream is = socket.getInputStream();
+			            InputStreamReader isr = new InputStreamReader(is);
+			            BufferedReader br = new BufferedReader(isr);
+			            
+			            // read message from client
+			            String message = br.readLine();
+			            if (message == null) message = new String();
+			            
+			            // write response to client
+			            pw.write(APP_ID + "\r\n");
+			            pw.flush();
+			            
+			            // close writer and reader
+			            pw.close();
+				        br.close();
+						
+			            // perform user action on message
+						receiveMessage(message);
+						
+						// close socket
+						socket.close();
+					} catch (SocketException e) {
+						if (!server.isClosed()) {
+							handleException(new Unique4jException(e));
 						}
+					} catch (IOException e) {
+						handleException(new Unique4jException(e));
 					}
 				}
-			};
-			
-			thread.start();
-		}
-		else {
-			System.err.println("Failed to created lock file!");
-		}
+			}
+		};
+		
+		thread.start();
 	}
 	
 	// do client tasks
-	private void doClient() {
+	private void doClient() throws Unique4jException {
 		// establish connection
 		InetAddress address = null;
 		try {
 			address = InetAddress.getByName(null);
 		} catch (UnknownHostException e) {
-			e.printStackTrace();
+			throw new Unique4jException(e);
 		}
 		
 		Socket socket = null;
@@ -242,13 +243,13 @@ public abstract class Unique {
 	     	try {
 	     		if (socket != null) socket.close();
 			} catch (IOException e) {
-				e.printStackTrace();
+				throw new Unique4jException(e);
 			}
 		}
 	}
 	
 	// try to get port from lock file
-	private int lockFile() {
+	private int lockFile() throws Unique4jException {
 		// lock file path
 		String filePath = TEMP_DIR + "/" + APP_ID + ".lock";
 		File file = new File(filePath);
@@ -259,23 +260,22 @@ public abstract class Unique {
 			try {
 				br = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
 				return Integer.parseInt(br.readLine());
-			} catch (NumberFormatException e) {
-				e.printStackTrace();
 			} catch (IOException e) {
-				e.printStackTrace();
+				throw new Unique4jException(e);
 			} finally {
 				try {
 					if (br != null) br.close();
 				} catch (IOException e) {
-					e.printStackTrace();
+					throw new Unique4jException(e);
 				}
 			}
 		}
+		
 		return -1;
 	}
 	
 	// try to write port to lock file
-	private boolean lockFile(int port) {
+	private void lockFile(int port) throws Unique4jException {
 		// lock file path
 		String filePath = TEMP_DIR + "/" + APP_ID + ".lock";
 		File file = new File(filePath);
@@ -285,23 +285,22 @@ public abstract class Unique {
 		try {
 			bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file)));
 			bw.write(String.valueOf(port));
-			return true;
 		} catch (IOException e) {
-			e.printStackTrace();
-			return false;
+			throw new Unique4jException(e);
 		} finally {
 			try {
 				if (bw != null) bw.close();
 			} catch (IOException e) {
-				e.printStackTrace();
+				throw new Unique4jException(e);
 			}
 		}
 	}
 	
 	/**
 	 * Free the lock if possible. This is only required to be called from the first instance.
+	 * @throws Unique4jException 
 	 */
-	public void free() {
+	public void free() throws Unique4jException {
 		try {
 			// close server socket
 			if (server != null) {
@@ -317,7 +316,7 @@ public abstract class Unique {
 				}
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			throw new Unique4jException(e);
 		}
 	}
 	
@@ -334,5 +333,16 @@ public abstract class Unique {
 	 * @return message sent from subsequent instances
 	 */
 	public abstract String sendMessage();
+	
+	/**
+	 * Method to receive and handle exceptions occurring while first instance is listening for subsequent instances.
+	 * 
+	 * By default prints stack trace of all exceptions. Override this method to change handle explicitly.
+	 * 
+	 * @param exception exception occurring while first instance is listening for subsequent instances
+	 */
+	public void handleException(Exception exception) {
+		exception.printStackTrace();
+	}
 	
 }

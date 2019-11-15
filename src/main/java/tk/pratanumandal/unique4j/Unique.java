@@ -340,8 +340,14 @@ public abstract class Unique {
 				File file = new File(filePath);
 				
 				// try to release file lock
-				fileLock.release();
-				lockRAF.close();
+				if (fileLock != null) {
+					fileLock.release();
+				}
+				
+				// try to close lock file RAF object
+				if (lockRAF != null) {
+					lockRAF.close();
+				}
 				
 				// try to delete lock file
 				if (file.exists()) {

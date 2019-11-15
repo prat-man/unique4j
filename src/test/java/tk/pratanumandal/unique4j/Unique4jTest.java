@@ -7,7 +7,7 @@ public class Unique4jTest {
     @Test
     public void testUnique4j() throws Unique4jException {
     	
-    	Unique unique = new Unique("unique-app-id-dfbbd-$%%231pqxzf5145-34dmnfzq") {
+    	Unique unique = new Unique("unique-app-id-mlsdvo-20191511-#j.6") {
 			@Override
 			public String sendMessage() {
 				// send null
@@ -20,8 +20,10 @@ public class Unique4jTest {
 			}
 		};
 		
+		// try to obtain lock
 		unique.lock();
 		
+		// try to free the lock before exiting program
 		unique.free();
 		
     }

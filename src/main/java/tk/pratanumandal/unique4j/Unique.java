@@ -106,8 +106,10 @@ public abstract class Unique {
 	// lock server socket
 	private ServerSocket server;
 	
+	// lock file RAF object
 	private RandomAccessFile lockRAF;
 	
+	// file lock for the lock file RAF object
 	private FileLock fileLock;
 
 	/**

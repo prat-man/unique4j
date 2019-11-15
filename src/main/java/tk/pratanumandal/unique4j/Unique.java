@@ -129,12 +129,17 @@ public abstract class Unique {
 	 * @throws Unique4jException throws Unique4jException if it is unable to start a server or connect to server
 	 */
 	public void lock() throws Unique4jException {
+		// try to obtain port number from lock file
 		port = lockFile();
 		
 		if (port == -1) {
+			// failed to fetch port number
+			// try to start server
 			startServer();
 		}
 		else {
+			// port number fetched from lock file
+			// try to start client
 			doClient();
 		}
 	}

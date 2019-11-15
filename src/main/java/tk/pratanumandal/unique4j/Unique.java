@@ -136,7 +136,8 @@ public abstract class Unique {
 	 * 
 	 * The APP_ID must be as unique as possible.
 	 * Avoid generic names like "my_app_id" or "hello_world".<br>
-	 * A good strategy is to use the entire package name (group ID + artifact ID) along with some random characters.
+	 * A good strategy is to use the entire package name (group ID + artifact ID) along with some random characters.<br>
+	 * This constructor allows to explicitly specify the exit strategy for subsequent instances.
 	 * 
 	 * @param APP_ID Unique string representing the application ID
 	 * @param AUTO_EXIT If true, automatically exit the application for subsequent instances

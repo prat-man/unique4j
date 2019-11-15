@@ -150,10 +150,21 @@ public abstract class Unique {
 	/**
 	 * Try to obtain lock. If not possible, send data to first instance.
 	 * 
+	 * @deprecated Use acquireLock() instead
+	 * @throws Unique4jException throws Unique4jException if it is unable to start a server or connect to server
+	 */
+	@Deprecated
+	public void lock() throws Unique4jException {
+		acquireLock();
+	}
+	
+	/**
+	 * Try to obtain lock. If not possible, send data to first instance.
+	 * 
 	 * @return true if able to acquire lock, false otherwise
 	 * @throws Unique4jException throws Unique4jException if it is unable to start a server or connect to server
 	 */
-	public boolean lock() throws Unique4jException {
+	public boolean acquireLock() throws Unique4jException {
 		// try to obtain port number from lock file
 		port = lockFile();
 		
@@ -388,10 +399,21 @@ public abstract class Unique {
 	/**
 	 * Free the lock if possible. This is only required to be called from the first instance.
 	 * 
+	 * @deprecated use freeLock() instead
+	 * @throws Unique4jException throws Unique4jException if it is unable to stop the server or release file lock
+	 */
+	@Deprecated
+	public void free() throws Unique4jException {
+		freeLock();
+	}
+	
+	/**
+	 * Free the lock if possible. This is only required to be called from the first instance.
+	 * 
 	 * @return true if able to release lock, false otherwise
 	 * @throws Unique4jException throws Unique4jException if it is unable to stop the server or release file lock
 	 */
-	public boolean free() throws Unique4jException {
+	public boolean freeLock() throws Unique4jException {
 		try {
 			// close server socket
 			if (server != null) {

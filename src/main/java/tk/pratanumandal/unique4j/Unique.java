@@ -215,14 +215,16 @@ public abstract class Unique {
 			throw new Unique4jException(e);
 		}
 		
+		// try to establish connection to server
 		Socket socket = null;
 		try {
-			// try to establish connection to server
 			socket = new Socket(address, port);
 		} catch (IOException e) {
+			// connection failed try to start server
 			startServer();
 		}
 		
+		// connection successful try to connect to server
 		if (socket != null) {
 			try {
 				// get message to be sent to first instance

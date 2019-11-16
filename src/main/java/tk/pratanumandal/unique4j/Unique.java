@@ -462,8 +462,11 @@ public abstract class Unique {
 	public abstract void receiveMessage(String message);
 	
 	/**
-	 * Method used in subsequent instances to send message to first instance.<br>
+	 * Method used in subsequent instances to send message to first instance.<br><br>
+	 * 
 	 * It is not recommended to perform blocking (long running) tasks here. Use <code>beforeExit()</code> method instead.<br>
+	 * One exception to this rule is if you intend to perform some user interaction before sending the message.<br><br>
+	 * 
 	 * This method is not synchronized.
 	 * 
 	 * @return message sent from subsequent instances

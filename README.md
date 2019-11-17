@@ -2,6 +2,8 @@
 
 Java library to allow only single instance of a java application to run and enable communication between first instance and subsequent instances.
 
+<br>
+
 ## Dependency Management
 
 ### Maven
@@ -17,6 +19,8 @@ Java library to allow only single instance of a java application to run and enab
     dependencies {
         implementation 'tk.pratanumandal:unique4j:1.2.1'
     }
+
+<br>
 
 ## How To Use
 
@@ -69,7 +73,7 @@ Alternatively, you can declare to turn off automatic exit for subsequent instanc
                                false) // second parameter is for AUTO_EXIT (false turns it off)
     { 
         ...
-        // Note: beforeExit() method even if declared is never invoked if AUTO_EXIT is turned off
+        // Note: beforeExit() method, even if overridden, is never invoked if AUTO_EXIT is turned off
     }
    
 Try to obtain a lock using the <code>Unique</code> object
@@ -95,6 +99,8 @@ Free the lock using the <code>Unique</code> object
     } catch (Unique4jException e) {
         e.printStackTrace();
     }
+
+<br>
 
 ## Demonstration
 

@@ -26,12 +26,14 @@ It is compatible with Java 1.6+ and is platform independent.
 
 ## How To Use
 
-Declare an application unique ID which is a common constant for all the instances
+Declare an application unique ID which is a common constant for all the instances. This ID must be as unique as possible. A good strategy is to use the entire package name (group ID + artifact ID) along with some random characters.
 
     // unique application ID
     public static String APP_ID = "tk.pratanumandal.unique4j-mlsdvo-20191511-#j.6";
 
-Create an instance of <code>Unique</code> class
+<br>
+
+Create an instance of <code>Unique</code> class.
 
     // create unique instance
     Unique unique = new Unique(APP_ID) {
@@ -68,7 +70,9 @@ Create an instance of <code>Unique</code> class
         }
     };
    
-Alternatively, you can declare to turn off automatic exit for subsequent instances
+<br>
+
+Alternatively, you can declare to turn off automatic exit for subsequent instances.
 
     // create unique instance with AUTO_EXIT turned off
     Unique unique = new Unique(APP_ID,
@@ -77,8 +81,10 @@ Alternatively, you can declare to turn off automatic exit for subsequent instanc
         ...
         // Note: beforeExit() method, even if overridden, is never invoked if AUTO_EXIT is turned off
     }
-   
-Try to obtain a lock using the <code>Unique</code> object
+    
+<br>
+
+Try to obtain a lock using the <code>Unique</code> object.
     
     // try to obtain lock
     boolean lockFlag = false;
@@ -90,7 +96,9 @@ Try to obtain a lock using the <code>Unique</code> object
     
     // perform long running tasks here
     
-Free the lock using the <code>Unique</code> object
+<br>
+
+Free the lock using the <code>Unique</code> object.
     
     // long running tasks end here
     
@@ -106,7 +114,7 @@ Free the lock using the <code>Unique</code> object
 
 ## Demonstration
 
-To put it all together, the following is a complete example of the usage and capabilities of Unique4j
+To put it all together, the following is a complete example of the usage and capabilities of Unique4j.
 
     import java.sql.Timestamp;
     import java.util.Date;

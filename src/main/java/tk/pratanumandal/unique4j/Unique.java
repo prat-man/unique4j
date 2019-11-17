@@ -223,22 +223,22 @@ public abstract class Unique {
 									
 									// open reader
 									InputStream is = socket.getInputStream();
-						            InputStreamReader isr = new InputStreamReader(is);
-						            BufferedReader br = new BufferedReader(isr);
-						            
-						            // read message from client
-						            String message = br.readLine();
-						            if (message == null) message = new String();
-						            
-						            // write response to client
-						            pw.write(APP_ID + "\r\n");
-						            pw.flush();
-						            
-						            // close writer and reader
-						            pw.close();
-							        br.close();
+									InputStreamReader isr = new InputStreamReader(is);
+									BufferedReader br = new BufferedReader(isr);
 									
-						            // perform user action on message
+									// read message from client
+									String message = br.readLine();
+									if (message == null) message = new String();
+									
+									// write response to client
+									pw.write(APP_ID + "\r\n");
+									pw.flush();
+									
+									// close writer and reader
+									pw.close();
+									br.close();
+									
+									// perform user action on message
 									receiveMessage(message);
 									
 									// close socket
@@ -297,40 +297,40 @@ public abstract class Unique {
 				
 				// open reader
 				InputStream is = socket.getInputStream();
-	            InputStreamReader isr = new InputStreamReader(is);
-	            BufferedReader br = new BufferedReader(isr);
-		        
-	            // write message to server
-		        pw.write(message + "\r\n");
-		        pw.flush();
-		        
-		        // read response from server
-		        String response = br.readLine();
-		        if (response == null) response = new String();
-		        
-		        // close writer and reader
-		        pw.close();
-		        br.close();
-		        
-		        if (response.equals(APP_ID)) {
-		        	// validation successful
-		        	if (AUTO_EXIT) {
-		        		// perform pre-exit tasks
-			        	beforeExit();
-			        	// exit this instance
-		        		System.exit(0);
-		        	}
-		        }
-		        else {
-		        	// validation failed, this is the first instance
-		        	startServer();
-		        }
+				InputStreamReader isr = new InputStreamReader(is);
+				BufferedReader br = new BufferedReader(isr);
+				
+				// write message to server
+				pw.write(message + "\r\n");
+				pw.flush();
+				
+				// read response from server
+				String response = br.readLine();
+				if (response == null) response = new String();
+				
+				// close writer and reader
+				pw.close();
+				br.close();
+				
+				if (response.equals(APP_ID)) {
+					// validation successful
+					if (AUTO_EXIT) {
+						// perform pre-exit tasks
+						beforeExit();
+						// exit this instance
+						System.exit(0);
+					}
+				}
+				else {
+					// validation failed, this is the first instance
+					startServer();
+				}
 			} catch (IOException e) {
 				throw new Unique4jException(e);
 			} finally {
 				// close socket
-		     	try {
-		     		if (socket != null) socket.close();
+			 	try {
+			 		if (socket != null) socket.close();
 				} catch (IOException e) {
 					throw new Unique4jException(e);
 				}

@@ -45,7 +45,7 @@ Create an instance of <code>Unique</code> class
         }
     };
    
-Alternatively, you can declare to use turn off automatic exit for subsequent instances
+Alternatively, you can declare to turn off automatic exit for subsequent instances
 
     // create unique instance with AUTO_EXIT turned off
     Unique unique = new Unique(APP_ID,

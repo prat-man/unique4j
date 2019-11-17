@@ -1,6 +1,8 @@
 # Unique4j
 
-Java library to allow only single instance of a java application to run and enable communication between first instance and subsequent instances.
+Unique4j is a cross-platform Java library to allow only single instance of a Java application to run and enable communication between first instance and subsequent instances.
+
+It is compatible with Java 1.6+ and is platform independent.
 
 <br>
 

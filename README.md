@@ -58,8 +58,9 @@ Alternatively, you can declare to turn off automatic exit for subsequent instanc
 Try to obtain a lock using the <code>Unique</code> object
     
     // try to obtain lock
+    boolean lockFlag = false;
     try {
-        unique.acquireLock();
+        lockFlag = unique.acquireLock();
     } catch (Unique4jException e) {
         e.printStackTrace();
     }
@@ -71,8 +72,9 @@ Free the lock using the <code>Unique</code> object
     // long running tasks end here
     
     // try to free the lock before exiting program
+    boolean lockFreeFlag = false;
     try {
-        unique.freeLock();
+        lockFreeFlag = unique.freeLock();
     } catch (Unique4jException e) {
         e.printStackTrace();
     }

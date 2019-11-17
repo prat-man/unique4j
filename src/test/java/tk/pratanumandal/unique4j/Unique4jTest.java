@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ *	 http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,10 +23,10 @@ import tk.pratanumandal.unique4j.exception.Unique4jException;
 
 public class Unique4jTest {
 	
-    @Test
-    public void testUnique4j() throws Unique4jException {
-    	
-    	Unique unique = new Unique("tk.pratanumandal.unique4j-mlsdvo-20191511-#j.6") {
+	@Test
+	public void testUnique4j() throws Unique4jException {
+		
+		Unique unique = new Unique("tk.pratanumandal.unique4j-mlsdvo-20191511-#j.6") {
 			@Override
 			public String sendMessage() {
 				// send null
@@ -37,6 +37,16 @@ public class Unique4jTest {
 			public void receiveMessage(String arg0) {
 				// do nothing
 			}
+			
+			@Override
+			public void handleException(Exception exception) {
+				// do nothing
+			}
+			
+			@Override
+			public void beforeExit() {
+				// do nothing
+			}
 		};
 		
 		// try to obtain lock
@@ -45,6 +55,6 @@ public class Unique4jTest {
 		// try to free the lock before exiting program
 		unique.freeLock();
 		
-    }
-    
+	}
+	
 }

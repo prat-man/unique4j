@@ -118,12 +118,12 @@ public abstract class Unique {
 	private FileLock fileLock;
 
 	/**
-	 * Parameterized constructor.<br><br>
+	 * Parameterized constructor.<br>
+	 * This constructor configures to automatically exit the application for subsequent instances.<br><br>
 	 * 
 	 * The APP_ID must be as unique as possible.
 	 * Avoid generic names like "my_app_id" or "hello_world".<br>
-	 * A good strategy is to use the entire package name (group ID + artifact ID) along with some random characters.<br>
-	 * This constructor configures to automatically exit the application for subsequent instances.
+	 * A good strategy is to use the entire package name (group ID + artifact ID) along with some random characters.
 	 * 
 	 * @param APP_ID Unique string representing the application ID
 	 */
@@ -132,12 +132,12 @@ public abstract class Unique {
 	}
 	
 	/**
-	 * Parameterized constructor.<br><br>
+	 * Parameterized constructor.<br>
+	 * This constructor allows to explicitly specify the exit strategy for subsequent instances.<br><br>
 	 * 
 	 * The APP_ID must be as unique as possible.
 	 * Avoid generic names like "my_app_id" or "hello_world".<br>
-	 * A good strategy is to use the entire package name (group ID + artifact ID) along with some random characters.<br>
-	 * This constructor allows to explicitly specify the exit strategy for subsequent instances.
+	 * A good strategy is to use the entire package name (group ID + artifact ID) along with some random characters.
 	 * 
 	 * @since 1.2
 	 * 
@@ -454,7 +454,8 @@ public abstract class Unique {
 	}
 	
 	/**
-	 * Method used in first instance to receive messages from subsequent instances.<br>
+	 * Method used in first instance to receive messages from subsequent instances.<br><br>
+	 * 
 	 * This method is not synchronized.
 	 * 
 	 * @param message message received by first instance from subsequent instances
@@ -474,8 +475,10 @@ public abstract class Unique {
 	public abstract String sendMessage();
 	
 	/**
-	 * Method to receive and handle exceptions occurring while first instance is listening for subsequent instances.<br>
-	 * By default prints stack trace of all exceptions. Override this method to change handle explicitly.<br>
+	 * Method to receive and handle exceptions occurring while first instance is listening for subsequent instances.<br><br>
+	 * 
+	 * By default prints stack trace of all exceptions. Override this method to handle exceptions explicitly.<br><br>
+	 * 
 	 * This method is not synchronized.
 	 * 
 	 * @param exception exception occurring while first instance is listening for subsequent instances
@@ -485,9 +488,11 @@ public abstract class Unique {
 	}
 	
 	/**
-	 * This method is called before exiting from subsequent instances.<br>
+	 * This method is called before exiting from subsequent instances.<br><br>
+	 * 
 	 * Override this method to perform blocking tasks before exiting from subsequent instances.<br>
-	 * This method is not invoked if auto exit is turned off.<br>
+	 * This method is not invoked if auto exit is turned off.<br><br>
+	 * 
 	 * This method is not synchronized.
 	 * 
 	 * @since 1.2

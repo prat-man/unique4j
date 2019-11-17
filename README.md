@@ -26,7 +26,7 @@ It is compatible with Java 1.6+ and is platform independent.
 
 ## How To Use
 
-Declare a application unique ID which is a common constant for all the instances
+Declare an application unique ID which is a common constant for all the instances
 
     // unique application ID
     public static String APP_ID = "tk.pratanumandal.unique4j-mlsdvo-20191511-#j.6";

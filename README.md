@@ -20,6 +20,25 @@ Java library to allow only single instance of a java application to run and enab
             Timestamp ts = new Timestamp(new Date().getTime());
             return "Another instance launch attempted: " + ts.toString();
         }
+        
+        /* It is not mandatory to override this method
+         * By default, the stack trace is printed
+         */
+        @Override
+        public void handleException(Exception exception) {
+            // display the exception message
+            System.out.println(exception.getMessage());
+        }
+
+        /* It is not mandatory to override this method
+         * By default, the subsequent instance simply exits
+         * This method is not invoked if AUTO_EXIT is turned off
+         */
+        @Override
+        public void beforeExit() {
+            // display exit message
+            System.out.println("Exiting subsequent instance.");
+        }
     };
     
     // try to obtain lock

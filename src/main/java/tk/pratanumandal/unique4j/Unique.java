@@ -152,7 +152,7 @@ public abstract class Unique {
 	/**
 	 * Try to obtain lock. If not possible, send data to first instance.
 	 * 
-	 * @deprecated Use <code>acquireLock()</code> instead
+	 * @deprecated Use <code>acquireLock()</code> instead.
 	 * @throws Unique4jException throws Unique4jException if it is unable to start a server or connect to server
 	 */
 	@Deprecated
@@ -403,7 +403,7 @@ public abstract class Unique {
 	/**
 	 * Free the lock if possible. This is only required to be called from the first instance.
 	 * 
-	 * @deprecated Use <code>freeLock()</code> instead
+	 * @deprecated Use <code>freeLock()</code> instead.
 	 * @throws Unique4jException throws Unique4jException if it is unable to stop the server or release file lock
 	 */
 	@Deprecated

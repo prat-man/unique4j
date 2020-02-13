@@ -352,6 +352,13 @@ public abstract class Unique {
 				return Integer.parseInt(br.readLine());
 			} catch (IOException e) {
 				throw new Unique4jException(e);
+			}catch (NumberFormatException e){
+				try {
+					if (br != null) br.close();
+					cleanLockFile();
+				} catch (IOException e2) {
+					throw new Unique4jException(e);
+				}
 			} finally {
 				try {
 					if (br != null) br.close();
@@ -425,24 +432,7 @@ public abstract class Unique {
 			if (server != null) {
 				server.close();
 			
-				// lock file path
-				String filePath = TEMP_DIR + "/" + APP_ID + ".lock";
-				File file = new File(filePath);
-				
-				// try to release file lock
-				if (fileLock != null) {
-					fileLock.release();
-				}
-				
-				// try to close lock file RAF object
-				if (lockRAF != null) {
-					lockRAF.close();
-				}
-				
-				// try to delete lock file
-				if (file.exists()) {
-					file.delete();
-				}
+				cleanLockFile();
 				
 				return true;
 			}
@@ -450,6 +440,27 @@ public abstract class Unique {
 			return false;
 		} catch (IOException e) {
 			throw new Unique4jException(e);
+		}
+	}
+
+	private void cleanLockFile() throws IOException {
+		// lock file path
+		String filePath = TEMP_DIR + "/" + APP_ID + ".lock";
+		File file = new File(filePath);
+
+		// try to release file lock
+		if (fileLock != null) {
+			fileLock.release();
+		}
+
+		// try to close lock file RAF object
+		if (lockRAF != null) {
+			lockRAF.close();
+		}
+
+		// try to delete lock file
+		if (file.exists()) {
+			file.delete();
 		}
 	}
 	

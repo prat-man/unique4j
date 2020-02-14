@@ -341,7 +341,7 @@ public abstract class Unique {
 	// try to get port from lock file
 	private int lockFile() throws Unique4jException {
 		// lock file path
-		String filePath = TEMP_DIR + "/" + APP_ID + ".lock";
+		String filePath = TEMP_DIR + File.separator + APP_ID + ".lock";
 		File file = new File(filePath);
 		
 		// try to get port from lock file
@@ -369,7 +369,7 @@ public abstract class Unique {
 	// try to write port to lock file
 	private void lockFile(int port) throws Unique4jException {
 		// lock file path
-		String filePath = TEMP_DIR + "/" + APP_ID + ".lock";
+		String filePath = TEMP_DIR + File.separator + APP_ID + ".lock";
 		File file = new File(filePath);
 		
 		// try to write port to lock file
@@ -428,7 +428,7 @@ public abstract class Unique {
 				server.close();
 			
 				// lock file path
-				String filePath = TEMP_DIR + "/" + APP_ID + ".lock";
+				String filePath = TEMP_DIR + File.separator + APP_ID + ".lock";
 				File file = new File(filePath);
 				
 				// try to release file lock

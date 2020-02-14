@@ -29,6 +29,7 @@ import tk.pratanumandal.unique4j.exception.Unique4jException;
 public class Unique4jTest {
 	
 	private static final String TEMP_DIR = System.getProperty("java.io.tmpdir");
+	
 	private static final String APP_ID = "tk.pratanumandal.unique4j-mlsdvo-20191511-#j.6";
 	
 	@Test

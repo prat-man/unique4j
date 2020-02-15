@@ -8,7 +8,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
 /**
- * The <code>Unique4jList</code> class is a logical entry point to the library which extends the functionality of the Unique4j class.<br>
+ * The <code>Unique4jList</code> class is a logical entry point to the library which extends the functionality of the <code>Unique4j</code> class.<br>
  * It allows to create an application lock or free it and send and receive messages between first and subsequent instances.<br><br>
  * 
  * This class is intended for passing a list of strings instead of a single string from the subsequent instance to the first instance.<br><br>

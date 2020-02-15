@@ -127,11 +127,18 @@
 					</execution>
 				</executions>
 				<configuration>
-					<additionalJOption>--no-module-directories</additionalJOption>
+	                <additionalJOption>--allow-script-in-comments</additionalJOption>
 					<bottom>
 						<![CDATA[
 							<br>Copyright &#169; 2019 <a href="https://pratanumandal.tk" target="_BLANK">Pratanu Mandal<a>. All rights reserved.
 						]]>
+						<![CDATA[
+		                    <script>
+		                    if (typeof useModuleDirectories !== 'undefined') {
+		                    	useModuleDirectories = false;
+		                    }
+		                    </script>
+		                ]]>
 					</bottom>
 				</configuration>
 			</plugin>

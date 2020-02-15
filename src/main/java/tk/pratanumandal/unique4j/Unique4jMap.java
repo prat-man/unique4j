@@ -33,8 +33,8 @@ import com.google.gson.JsonParser;
  *	&nbsp;&nbsp;&nbsp;&nbsp;}
  *	
  *	&nbsp;&nbsp;&nbsp;&nbsp;&#64;Override
- *	&nbsp;&nbsp;&nbsp;&nbsp;protected void receiveMessageMap(Map&lt;String, String&gt; message) {
- *	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for (Entry&lt;String, String&gt; entry : message.entrySet()) {
+ *	&nbsp;&nbsp;&nbsp;&nbsp;protected void receiveMessageMap(Map&lt;String, String&gt; messageMap) {
+ *	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for (Entry&lt;String, String&gt; entry : messageMap.entrySet()) {
  *	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(entry.getKey() + " : " + entry.getValue());
  *	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
  *	&nbsp;&nbsp;&nbsp;&nbsp;}

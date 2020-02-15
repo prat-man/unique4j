@@ -92,8 +92,8 @@ public abstract class Unique4jList extends Unique4j {
 	}
 
 	/**
-	 * Method used in first instance to receive messages from subsequent instances.<br>
-	 * The use of this method directly in <code>Unique4jList</code> is highly discouraged. Use <code>receiveMessageList()</code> instead.<br><br>
+	 * Internal method used in first instance to receive and parse messages from subsequent instances.<br>
+	 * The use of this method directly in <code>Unique4jList</code> is discouraged. Use <code>receiveMessageList()</code> instead.<br><br>
 	 * 
 	 * This method is not synchronized.
 	 * 
@@ -121,8 +121,8 @@ public abstract class Unique4jList extends Unique4j {
 	}
 
 	/**
-	 * Method used in subsequent instances to send message to first instance.<br>
-	 * The use of this method directly in <code>Unique4jList</code> is highly discouraged. Use <code>sendMessageList()</code> instead.<br><br>
+	 * Internal method used in subsequent instances to parse and send message to first instance.<br>
+	 * The use of this method directly in <code>Unique4jList</code> is discouraged. Use <code>sendMessageList()</code> instead.<br><br>
 	 * 
 	 * It is not recommended to perform blocking (long running) tasks here. Use <code>beforeExit()</code> method instead.<br>
 	 * One exception to this rule is if you intend to perform some user interaction before sending the message.<br><br>

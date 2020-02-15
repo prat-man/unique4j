@@ -93,8 +93,8 @@ public abstract class Unique4jMap extends Unique4j {
 	}
 
 	/**
-	 * Method used in first instance to receive messages from subsequent instances.<br>
-	 * The use of this method directly in <code>Unique4jMap</code> is highly discouraged. Use <code>receiveMessageMap()</code> instead.<br><br>
+	 * Internal method used in first instance to receive and parse messages from subsequent instances.<br>
+	 * The use of this method directly in <code>Unique4jMap</code> is discouraged. Use <code>receiveMessageMap()</code> instead.<br><br>
 	 * 
 	 * This method is not synchronized.
 	 * 
@@ -122,8 +122,8 @@ public abstract class Unique4jMap extends Unique4j {
 	}
 
 	/**
-	 * Method used in subsequent instances to send message to first instance.<br>
-	 * The use of this method directly in <code>Unique4jMap</code> is highly discouraged. Use <code>sendMessageMap()</code> instead.<br><br>
+	 * Internal method used in subsequent instances to parse and send message to first instance.<br>
+	 * The use of this method directly in <code>Unique4jMap</code> is discouraged. Use <code>sendMessageMap()</code> instead.<br><br>
 	 * 
 	 * It is not recommended to perform blocking (long running) tasks here. Use <code>beforeExit()</code> method instead.<br>
 	 * One exception to this rule is if you intend to perform some user interaction before sending the message.<br><br>

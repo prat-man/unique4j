@@ -94,49 +94,52 @@ public abstract class Unique4jMap extends Unique4j {
 
 	/**
 	 * Method used in first instance to receive messages from subsequent instances.<br>
-	 * The use of this method directly in <code>Unique4jMap</code> is highly discouraged.<br><br>
+	 * The use of this method directly in <code>Unique4jMap</code> is highly discouraged. Use <code>receiveMessageMap()</code> instead.<br><br>
 	 * 
 	 * This method is not synchronized.
 	 * 
-	 * @deprecated Use <code>receiveMessageMap()</code> instead.
 	 * @param message message received by first instance from subsequent instances
 	 */
-	@Deprecated
 	@Override
-	protected void receiveMessage(String message) {
-		// parse the JSON array string into an array of string arguments
-        JsonObject jsonObj = JsonParser.parseString(message).getAsJsonObject();
-        
-        Map<String, String> stringMap = new HashMap<String, String>();
-        
-        for (Entry<String, JsonElement> entry : jsonObj.entrySet()) {
-            JsonElement element = entry.getValue();
-            stringMap.put(entry.getKey(), element.getAsString());
-        }
-        
-        // return the parsed string list
-        receiveMessageMap(stringMap);
+	protected final void receiveMessage(String message) {
+		if (message == null || message.isEmpty()) {
+			receiveMessageMap(null);
+		}
+		else {
+			// parse the JSON array string into an array of string arguments
+	        JsonObject jsonObj = JsonParser.parseString(message).getAsJsonObject();
+	        
+	        Map<String, String> stringMap = new HashMap<String, String>();
+	        
+	        for (Entry<String, JsonElement> entry : jsonObj.entrySet()) {
+	            JsonElement element = entry.getValue();
+	            stringMap.put(entry.getKey(), element.getAsString());
+	        }
+	        
+	        // return the parsed string list
+	        receiveMessageMap(stringMap);
+		}
 	}
 
 	/**
 	 * Method used in subsequent instances to send message to first instance.<br>
-	 * The use of this method directly in <code>Unique4jMap</code> is highly discouraged.<br><br>
+	 * The use of this method directly in <code>Unique4jMap</code> is highly discouraged. Use <code>sendMessageMap()</code> instead.<br><br>
 	 * 
 	 * It is not recommended to perform blocking (long running) tasks here. Use <code>beforeExit()</code> method instead.<br>
 	 * One exception to this rule is if you intend to perform some user interaction before sending the message.<br><br>
 	 * 
 	 * This method is not synchronized.
 	 * 
-	 * @deprecated Use <code>sendMessageMap()</code> instead.
 	 * @return message sent from subsequent instances
 	 */
-	@Deprecated
 	@Override
-	protected String sendMessage() {
+	protected final String sendMessage() {
 		// convert arguments to JSON array string
         JsonObject jsonObj = new JsonObject();
         
         Map<String, String> stringArgs = sendMessageMap();
+        
+        if (stringArgs == null) return null;
         
         for (Entry<String, String> entry : stringArgs.entrySet()) {
         	jsonObj.addProperty(entry.getKey(), entry.getValue());

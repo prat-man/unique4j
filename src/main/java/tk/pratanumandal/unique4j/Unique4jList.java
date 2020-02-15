@@ -93,49 +93,52 @@ public abstract class Unique4jList extends Unique4j {
 
 	/**
 	 * Method used in first instance to receive messages from subsequent instances.<br>
-	 * The use of this method directly in <code>Unique4jList</code> is highly discouraged.<br><br>
+	 * The use of this method directly in <code>Unique4jList</code> is highly discouraged. Use <code>receiveMessageList()</code> instead.<br><br>
 	 * 
 	 * This method is not synchronized.
 	 * 
-	 * @deprecated Use <code>receiveMessageList()</code> instead.
 	 * @param message message received by first instance from subsequent instances
 	 */
-	@Deprecated
 	@Override
-	protected void receiveMessage(String message) {
-		// parse the JSON array string into an array of string arguments
-        JsonArray jsonArgs = JsonParser.parseString(message).getAsJsonArray();
-        
-        List<String> stringArgs = new ArrayList<String>(jsonArgs.size());
-        
-        for (int i = 0; i < jsonArgs.size(); i++) {
-            JsonElement element = jsonArgs.get(i);
-            stringArgs.add(element.getAsString());
-        }
-        
-        // return the parsed string list
-        receiveMessageList(stringArgs);
+	protected final void receiveMessage(String message) {
+		if (message == null || message.isEmpty()) {
+			receiveMessageList(null);
+		}
+		else {
+			// parse the JSON array string into an array of string arguments
+	        JsonArray jsonArgs = JsonParser.parseString(message).getAsJsonArray();
+	        
+	        List<String> stringArgs = new ArrayList<String>(jsonArgs.size());
+	        
+	        for (int i = 0; i < jsonArgs.size(); i++) {
+	            JsonElement element = jsonArgs.get(i);
+	            stringArgs.add(element.getAsString());
+	        }
+	        
+	        // return the parsed string list
+	        receiveMessageList(stringArgs);
+		}
 	}
 
 	/**
 	 * Method used in subsequent instances to send message to first instance.<br>
-	 * The use of this method directly in <code>Unique4jList</code> is highly discouraged.<br><br>
+	 * The use of this method directly in <code>Unique4jList</code> is highly discouraged. Use <code>sendMessageList()</code> instead.<br><br>
 	 * 
 	 * It is not recommended to perform blocking (long running) tasks here. Use <code>beforeExit()</code> method instead.<br>
 	 * One exception to this rule is if you intend to perform some user interaction before sending the message.<br><br>
 	 * 
 	 * This method is not synchronized.
 	 * 
-	 * @deprecated Use <code>sendMessageList()</code> instead.
 	 * @return message sent from subsequent instances
 	 */
-	@Deprecated
 	@Override
-	protected String sendMessage() {
+	protected final String sendMessage() {
 		// convert arguments to JSON array string
         JsonArray jsonArgs = new JsonArray();
         
         List<String> stringArgs = sendMessageList();
+        
+        if (stringArgs == null) return null;
         
         for (String arg : stringArgs) {
             jsonArgs.add(arg);

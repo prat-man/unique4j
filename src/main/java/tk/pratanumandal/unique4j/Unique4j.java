@@ -82,7 +82,7 @@ import tk.pratanumandal.unique4j.exception.Unique4jException;
  * </pre>
  * 
  * @author Pratanu Mandal
- * @since 1.0
+ * @since 1.3
  *
  */
 public abstract class Unique4j {

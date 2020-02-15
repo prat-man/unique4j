@@ -38,7 +38,7 @@ public class Unique4jTest {
 	private static final String APP_ID = "tk.pratanumandal.unique4j-mlsdvo-20191511-#j.6";
 	
 	@Test
-	public void testUnique4j() throws Unique4jException {
+	public void testUnique4jBasic() throws Unique4jException {
 		
 		Unique4j unique = new Unique4j(APP_ID) {
 			@Override
@@ -72,7 +72,7 @@ public class Unique4jTest {
 	}
 	
 	@Test
-	public void testUnique() throws Unique4jException {
+	public void testUnique4j() throws Unique4jException {
 		
 		final Object lock = new Object();
 		
@@ -140,7 +140,7 @@ public class Unique4jTest {
 	}
 	
 	@Test
-	public void testUniqueList() throws Unique4jException {
+	public void testUnique4jList() throws Unique4jException {
 		
 		final Object lock = new Object();
 		
@@ -212,7 +212,7 @@ public class Unique4jTest {
 	}
 	
 	@Test
-	public void testUniqueMap() throws Unique4jException {
+	public void testUnique4jMap() throws Unique4jException {
 		
 		final Object lock = new Object();
 		

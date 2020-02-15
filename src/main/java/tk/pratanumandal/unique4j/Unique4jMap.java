@@ -50,7 +50,7 @@ import com.google.gson.JsonParser;
  * </pre>
  * 
  * @author Pratanu Mandal
- * @since 1.2.2
+ * @since 1.3
  *
  */
 public abstract class Unique4jMap extends Unique4j {

@@ -41,23 +41,23 @@ import java.nio.channels.FileLock;
 import tk.pratanumandal.unique4j.exception.Unique4jException;
 
 /**
- * The <code>Unique</code> class is the logical entry point to the library.<br>
+ * The <code>Unique4j</code> class is the primary logical entry point to the library.<br>
  * It allows to create an application lock or free it and send and receive messages between first and subsequent instances.<br><br>
  * 
  * <pre>
  *	// unique application ID
  *	String APP_ID = "tk.pratanumandal.unique4j-mlsdvo-20191511-#j.6";
  *	
- *	// create unique instance
- *	Unique unique = new Unique(APP_ID) {
+ *	// create Unique4j instance
+ *	Unique4j unique = new Unique4j(APP_ID) {
  *	&nbsp;&nbsp;&nbsp;&nbsp;&#64;Override
- *	&nbsp;&nbsp;&nbsp;&nbsp;public void receiveMessage(String message) {
+ *	&nbsp;&nbsp;&nbsp;&nbsp;protected void receiveMessage(String message) {
  *	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// print received message (timestamp)
  *	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(message);
  *	&nbsp;&nbsp;&nbsp;&nbsp;}
  *	&nbsp;&nbsp;&nbsp;&nbsp;
  *	&nbsp;&nbsp;&nbsp;&nbsp;&#64;Override
- *	&nbsp;&nbsp;&nbsp;&nbsp;public String sendMessage() {
+ *	&nbsp;&nbsp;&nbsp;&nbsp;protected String sendMessage() {
  *	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// send timestamp as message
  *	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Timestamp ts = new Timestamp(new Date().getTime());
  *	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return "Another instance launch attempted: " + ts.toString();

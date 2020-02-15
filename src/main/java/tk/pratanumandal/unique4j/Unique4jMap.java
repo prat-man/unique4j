@@ -9,26 +9,33 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 /**
- * The <code>Unique</code> class is the logical entry point to the library.<br>
- * It allows to create an application lock or free it and send and receive messages between first and subsequent instances.<br><br>
+ * The <code>Unique4jMap</code> class is a logical entry point to the library which extends the functionality of the Unique4j class.<br>
+ * It allows to create an application lock or free it and send and receive messages between first and subsequent instances.<br>
+ * This class is intended for passing a map of string key-value pairs instead of a single string from the subsequent instance to the first instance.<br><br>
  * 
  * <pre>
  *	// unique application ID
  *	String APP_ID = "tk.pratanumandal.unique4j-mlsdvo-20191511-#j.6";
  *	
- *	// create unique instance
- *	Unique unique = new UniqueList(APP_ID) {
+ *	// create Unique4j instance
+ *	Unique4j unique = new Unique4jMap(APP_ID) {
  *	&nbsp;&nbsp;&nbsp;&nbsp;&#64;Override
- *	&nbsp;&nbsp;&nbsp;&nbsp;public void receiveMessage(String message) {
- *	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// print received message (timestamp)
- *	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(message);
+ *	&nbsp;&nbsp;&nbsp;&nbsp;protected Map&lt;String, String&gt; sendMessageMap() {
+ *	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Map&lt;String, String&gt; messageMap = new HashMap&lt;String, String&gt;();
+ *	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+ *	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;messageMap.put("key1", "Message 1");
+ *	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;messageMap.put("key2", "Message 2");
+ *	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;messageMap.put("key3", "Message 3");
+ *	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;messageMap.put("key4", "Message 4");
+ *	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+ *	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return messageMap;
  *	&nbsp;&nbsp;&nbsp;&nbsp;}
- *	&nbsp;&nbsp;&nbsp;&nbsp;
+ *	
  *	&nbsp;&nbsp;&nbsp;&nbsp;&#64;Override
- *	&nbsp;&nbsp;&nbsp;&nbsp;public String sendMessage() {
- *	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// send timestamp as message
- *	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Timestamp ts = new Timestamp(new Date().getTime());
- *	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return "Another instance launch attempted: " + ts.toString();
+ *	&nbsp;&nbsp;&nbsp;&nbsp;protected void receiveMessageMap(Map&lt;String, String&gt; message) {
+ *	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for (Entry&lt;String, String&gt; entry : message.entrySet()) {
+ *	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println(entry.getKey() + " : " + entry.getValue());
+ *	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}
  *	&nbsp;&nbsp;&nbsp;&nbsp;}
  *	};
  *	
@@ -84,6 +91,16 @@ public abstract class Unique4jMap extends Unique4j {
 		super(APP_ID, AUTO_EXIT);
 	}
 
+	/**
+	 * Method used in first instance to receive messages from subsequent instances.<br>
+	 * The use of this method directly in <code>Unique4jMap</code> is highly discouraged.<br><br>
+	 * 
+	 * This method is not synchronized.
+	 * 
+	 * @deprecated Use <code>receiveMessageMap()</code> instead.
+	 * @param message message received by first instance from subsequent instances
+	 */
+	@Deprecated
 	@Override
 	protected void receiveMessage(String message) {
 		// parse the JSON array string into an array of string arguments
@@ -100,6 +117,19 @@ public abstract class Unique4jMap extends Unique4j {
         receiveMessageMap(stringMap);
 	}
 
+	/**
+	 * Method used in subsequent instances to send message to first instance.<br>
+	 * The use of this method directly in <code>Unique4jMap</code> is highly discouraged.<br><br>
+	 * 
+	 * It is not recommended to perform blocking (long running) tasks here. Use <code>beforeExit()</code> method instead.<br>
+	 * One exception to this rule is if you intend to perform some user interaction before sending the message.<br><br>
+	 * 
+	 * This method is not synchronized.
+	 * 
+	 * @deprecated Use <code>sendMessageMap()</code> instead.
+	 * @return message sent from subsequent instances
+	 */
+	@Deprecated
 	@Override
 	protected String sendMessage() {
 		// convert arguments to JSON array string
@@ -115,8 +145,25 @@ public abstract class Unique4jMap extends Unique4j {
         return jsonObj.toString();
 	}
 	
+	/**
+	 * Method used in first instance to receive map of messages from subsequent instances.<br><br>
+	 * 
+	 * This method is not synchronized.
+	 * 
+	 * @param messageMap map of messages received by first instance from subsequent instances
+	 */
 	protected abstract void receiveMessageMap(Map<String, String> messageMap);
 	
+	/**
+	 * Method used in subsequent instances to send map of messages to first instance.<br><br>
+	 * 
+	 * It is not recommended to perform blocking (long running) tasks here. Use <code>beforeExit()</code> method instead.<br>
+	 * One exception to this rule is if you intend to perform some user interaction before sending the message.<br><br>
+	 * 
+	 * This method is not synchronized.
+	 * 
+	 * @return map of messages sent from subsequent instances
+	 */
 	protected abstract Map<String, String> sendMessageMap();
 	
 }

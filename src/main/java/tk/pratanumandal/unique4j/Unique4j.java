@@ -228,7 +228,10 @@ public abstract class Unique4j {
 									
 									// read message from client
 									String message = br.readLine();
-									if (message == null) message = new String();
+									
+									// unescape null
+									if (message != null && message.contentEquals("null")) message = null;
+									else message = message.replace("\\null", "null");
 									
 									// write response to client
 									pw.write(APP_ID + "\r\n");
@@ -289,7 +292,10 @@ public abstract class Unique4j {
 			try {
 				// get message to be sent to first instance
 				String message = sendMessage();
-				if (message == null) message = new String();
+				
+				// escape null
+				if (message == null) message = "null";
+				else message = message.replace("null", "\\null");
 				
 				// open writer
 				OutputStream os = socket.getOutputStream();

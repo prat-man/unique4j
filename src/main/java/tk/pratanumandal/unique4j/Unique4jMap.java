@@ -102,7 +102,7 @@ public abstract class Unique4jMap extends Unique4j {
 	 */
 	@Override
 	protected final void receiveMessage(String message) {
-		if (message == null || message.isEmpty()) {
+		if (message == null) {
 			receiveMessageMap(null);
 		}
 		else {

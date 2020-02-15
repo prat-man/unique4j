@@ -101,7 +101,7 @@ public abstract class Unique4jList extends Unique4j {
 	 */
 	@Override
 	protected final void receiveMessage(String message) {
-		if (message == null || message.isEmpty()) {
+		if (message == null) {
 			receiveMessageList(null);
 		}
 		else {

@@ -462,7 +462,7 @@ public abstract class Unique {
 	 * 
 	 * @param message message received by first instance from subsequent instances
 	 */
-	public abstract void receiveMessage(String message);
+	protected abstract void receiveMessage(String message);
 	
 	/**
 	 * Method used in subsequent instances to send message to first instance.<br><br>
@@ -474,7 +474,7 @@ public abstract class Unique {
 	 * 
 	 * @return message sent from subsequent instances
 	 */
-	public abstract String sendMessage();
+	protected abstract String sendMessage();
 	
 	/**
 	 * Method to receive and handle exceptions occurring while first instance is listening for subsequent instances.<br><br>
@@ -485,7 +485,7 @@ public abstract class Unique {
 	 * 
 	 * @param exception exception occurring while first instance is listening for subsequent instances
 	 */
-	public void handleException(Exception exception) {
+	protected void handleException(Exception exception) {
 		exception.printStackTrace();
 	}
 	
@@ -499,6 +499,6 @@ public abstract class Unique {
 	 * 
 	 * @since 1.2
 	 */
-	public void beforeExit() {}
+	protected void beforeExit() {}
 	
 }

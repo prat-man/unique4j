@@ -20,8 +20,11 @@ package tk.pratanumandal.unique4j;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.junit.Assert;
 import org.junit.Test;
 
 import tk.pratanumandal.unique4j.exception.Unique4jException;
@@ -37,23 +40,23 @@ public class Unique4jTest {
 		
 		Unique unique = new Unique(APP_ID) {
 			@Override
-			public String sendMessage() {
+			protected String sendMessage() {
 				// send null
 				return null;
 			}
 			
 			@Override
-			public void receiveMessage(String arg0) {
+			protected void receiveMessage(String arg0) {
 				// do nothing
 			}
 			
 			@Override
-			public void handleException(Exception exception) {
+			protected void handleException(Exception exception) {
 				// do nothing
 			}
 			
 			@Override
-			public void beforeExit() {
+			protected void beforeExit() {
 				// do nothing
 			}
 		};
@@ -63,6 +66,146 @@ public class Unique4jTest {
 		
 		// try to free the lock before exiting program
 		unique.freeLock();
+		
+	}
+	
+	@Test
+	public void testUnique() throws Unique4jException {
+		
+		final Object lock = new Object();
+		
+		final List<String> received = new ArrayList<String>();
+		
+		final String message = "ijvnfpp389528$#$@520sdf.213sgv8";
+		
+		Unique unique1 = new Unique(APP_ID, false) {
+			@Override
+			protected String sendMessage() {
+				// send null
+				return null;
+			}
+			
+			@Override
+			protected void receiveMessage(String arg0) {
+				// to assert on main thread
+				received.add(arg0);
+				
+				// notify that message has been received
+				synchronized (lock) {
+					lock.notify();
+				}
+			}
+		};
+		
+		// try to obtain lock
+		unique1.acquireLock();
+		
+		Unique unique2 = new Unique(APP_ID, false) {
+			@Override
+			protected String sendMessage() {
+				// send message
+				return message;
+			}
+			
+			@Override
+			protected void receiveMessage(String arg0) {
+				// do nothing
+			}
+		};
+		
+		// try to obtain lock
+		unique2.acquireLock();
+		
+		// wait until message is received
+		if (received.isEmpty()) {
+			synchronized (lock) {
+				try {
+					lock.wait();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		// assert if message is sent correctly
+		Assert.assertEquals(received.get(0), message);
+		
+		// try to free the locks before exiting program
+		unique1.freeLock();
+		
+		unique2.freeLock();
+		
+	}
+	
+	@Test
+	public void testUniqueList() throws Unique4jException {
+		
+		final Object lock = new Object();
+		
+		final List<String> received = new ArrayList<String>();
+		
+		final List<String> messageList = new ArrayList<String>();
+		messageList.add("ijvnfpp389528$#$@520sdf.213sgv6");
+		messageList.add("ijvnfpp389528$#$@520sdf.213sgv7");
+		messageList.add("ijvnfpp389528$#$@520sdf.213sgv8");
+		messageList.add("ijvnfpp389528$#$@520sdf.213sgv9");
+		
+		Unique unique1 = new UniqueList(APP_ID, false) {
+			@Override
+			protected List<String> sendMessageList() {
+				// send null
+				return null;
+			}
+
+			@Override
+			protected void receiveMessageList(List<String> message) {
+				// to assert on main thread
+				received.addAll(message);
+				
+				// notify that message has been received
+				synchronized (lock) {
+					lock.notify();
+				}
+			}
+		};
+		
+		// try to obtain lock
+		unique1.acquireLock();
+		
+		Unique unique2 = new UniqueList(APP_ID, false) {
+			@Override
+			protected List<String> sendMessageList() {
+				// send message list
+				return messageList;
+			}
+
+			@Override
+			protected void receiveMessageList(List<String> message) {
+				// do nothing
+			}
+		};
+		
+		// try to obtain lock
+		unique2.acquireLock();
+		
+		// wait until message is received
+		if (received.isEmpty()) {
+			synchronized (lock) {
+				try {
+					lock.wait();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		// assert if message is sent correctly
+		Assert.assertEquals(received, messageList);
+		
+		// try to free the locks before exiting program
+		unique1.freeLock();
+		
+		unique2.freeLock();
 		
 	}
 	

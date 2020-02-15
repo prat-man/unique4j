@@ -1,10 +1,11 @@
 package tk.pratanumandal.unique4j;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 /**
@@ -52,7 +53,7 @@ import com.google.gson.JsonParser;
  * @since 1.2.2
  *
  */
-public abstract class UniqueList extends Unique {
+public abstract class Unique4jMap extends Unique4j {
 	
 	/**
 	 * Parameterized constructor.<br>
@@ -64,7 +65,7 @@ public abstract class UniqueList extends Unique {
 	 * 
 	 * @param APP_ID Unique string representing the application ID
 	 */
-	public UniqueList(String APP_ID) {
+	public Unique4jMap(String APP_ID) {
 		super(APP_ID);
 	}
 	
@@ -79,43 +80,43 @@ public abstract class UniqueList extends Unique {
 	 * @param APP_ID Unique string representing the application ID
 	 * @param AUTO_EXIT If true, automatically exit the application for subsequent instances
 	 */
-	public UniqueList(String APP_ID, boolean AUTO_EXIT) {
+	public Unique4jMap(String APP_ID, boolean AUTO_EXIT) {
 		super(APP_ID, AUTO_EXIT);
 	}
 
 	@Override
 	protected void receiveMessage(String message) {
 		// parse the JSON array string into an array of string arguments
-        JsonArray jsonArgs = JsonParser.parseString(message).getAsJsonArray();
+        JsonObject jsonObj = JsonParser.parseString(message).getAsJsonObject();
         
-        List<String> stringArgs = new ArrayList<String>(jsonArgs.size());
+        Map<String, String> stringMap = new HashMap<String, String>();
         
-        for (int i = 0; i < jsonArgs.size(); i++) {
-            JsonElement element = jsonArgs.get(i);
-            stringArgs.add(element.getAsString());
+        for (Entry<String, JsonElement> entry : jsonObj.entrySet()) {
+            JsonElement element = entry.getValue();
+            stringMap.put(entry.getKey(), element.getAsString());
         }
         
         // return the parsed string list
-        receiveMessageList(stringArgs);
+        receiveMessageMap(stringMap);
 	}
 
 	@Override
 	protected String sendMessage() {
 		// convert arguments to JSON array string
-        JsonArray jsonArgs = new JsonArray();
+        JsonObject jsonObj = new JsonObject();
         
-        List<String> stringArgs = sendMessageList();
+        Map<String, String> stringArgs = sendMessageMap();
         
-        for (String arg : stringArgs) {
-            jsonArgs.add(arg);
+        for (Entry<String, String> entry : stringArgs.entrySet()) {
+        	jsonObj.addProperty(entry.getKey(), entry.getValue());
         }
 
         // return the JSON array string
-        return jsonArgs.toString();
+        return jsonObj.toString();
 	}
 	
-	protected abstract void receiveMessageList(List<String> message);
+	protected abstract void receiveMessageMap(Map<String, String> messageMap);
 	
-	protected abstract List<String> sendMessageList();
+	protected abstract Map<String, String> sendMessageMap();
 	
 }

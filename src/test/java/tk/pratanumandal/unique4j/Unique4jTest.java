@@ -21,7 +21,9 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
@@ -38,7 +40,7 @@ public class Unique4jTest {
 	@Test
 	public void testUnique4j() throws Unique4jException {
 		
-		Unique unique = new Unique(APP_ID) {
+		Unique4j unique = new Unique4j(APP_ID) {
 			@Override
 			protected String sendMessage() {
 				// send null
@@ -78,7 +80,7 @@ public class Unique4jTest {
 		
 		final String message = "ijvnfpp389528$#$@520sdf.213sgv8";
 		
-		Unique unique1 = new Unique(APP_ID, false) {
+		Unique4j unique1 = new Unique4j(APP_ID, false) {
 			@Override
 			protected String sendMessage() {
 				// send null
@@ -100,7 +102,7 @@ public class Unique4jTest {
 		// try to obtain lock
 		unique1.acquireLock();
 		
-		Unique unique2 = new Unique(APP_ID, false) {
+		Unique4j unique2 = new Unique4j(APP_ID, false) {
 			@Override
 			protected String sendMessage() {
 				// send message
@@ -150,7 +152,7 @@ public class Unique4jTest {
 		messageList.add("ijvnfpp389528$#$@520sdf.213sgv8");
 		messageList.add("ijvnfpp389528$#$@520sdf.213sgv9");
 		
-		Unique unique1 = new UniqueList(APP_ID, false) {
+		Unique4j unique1 = new Unique4jList(APP_ID, false) {
 			@Override
 			protected List<String> sendMessageList() {
 				// send null
@@ -172,7 +174,7 @@ public class Unique4jTest {
 		// try to obtain lock
 		unique1.acquireLock();
 		
-		Unique unique2 = new UniqueList(APP_ID, false) {
+		Unique4j unique2 = new Unique4jList(APP_ID, false) {
 			@Override
 			protected List<String> sendMessageList() {
 				// send message list
@@ -210,6 +212,78 @@ public class Unique4jTest {
 	}
 	
 	@Test
+	public void testUniqueMap() throws Unique4jException {
+		
+		final Object lock = new Object();
+		
+		final Map<String, String> received = new HashMap<String, String>();
+		
+		final Map<String, String> messageMap = new HashMap<String, String>();
+		messageMap.put("23vvf1", "ijvnfpp389528$#$@520sdf.213sgv6");
+		messageMap.put("23vvf2", "ijvnfpp389528$#$@520sdf.213sgv7");
+		messageMap.put("23vvf3", "ijvnfpp389528$#$@520sdf.213sgv8");
+		messageMap.put("23vvf4", "ijvnfpp389528$#$@520sdf.213sgv9");
+		
+		Unique4j unique1 = new Unique4jMap(APP_ID, false) {
+			@Override
+			protected Map<String, String> sendMessageMap() {
+				// send null
+				return null;
+			}
+
+			@Override
+			protected void receiveMessageMap(Map<String, String> message) {
+				// to assert on main thread
+				received.putAll(message);
+				
+				// notify that message has been received
+				synchronized (lock) {
+					lock.notify();
+				}
+			}
+		};
+		
+		// try to obtain lock
+		unique1.acquireLock();
+		
+		Unique4j unique2 = new Unique4jMap(APP_ID, false) {
+			@Override
+			protected Map<String, String> sendMessageMap() {
+				// send message list
+				return messageMap;
+			}
+
+			@Override
+			protected void receiveMessageMap(Map<String, String> message) {
+				// do nothing
+			}
+		};
+		
+		// try to obtain lock
+		unique2.acquireLock();
+		
+		// wait until message is received
+		if (received.isEmpty()) {
+			synchronized (lock) {
+				try {
+					lock.wait();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		// assert if message is sent correctly
+		Assert.assertEquals(received, messageMap);
+		
+		// try to free the locks before exiting program
+		unique1.freeLock();
+		
+		unique2.freeLock();
+		
+	}
+	
+	@Test
 	public void testCorruptedLockFile() throws Unique4jException, IOException {
 		
 		String filePath = TEMP_DIR + File.separator + APP_ID + ".lock";
@@ -225,7 +299,7 @@ public class Unique4jTest {
 		FileUtils.writeStringToFile(file, "abcdefghi\njklmnop\n\rqrst", Charset.forName("UTF-8"));
 
 		// create instance of Unique
-		Unique unique = new Unique(APP_ID) {
+		Unique4j unique = new Unique4j(APP_ID) {
 			@Override
 			public String sendMessage() {
 				// send null

@@ -85,7 +85,7 @@ import tk.pratanumandal.unique4j.exception.Unique4jException;
  * @since 1.0
  *
  */
-public abstract class Unique {
+public abstract class Unique4j {
 	
 	// starting position of port check
 	private static final int PORT_START = 3000;
@@ -127,7 +127,7 @@ public abstract class Unique {
 	 * 
 	 * @param APP_ID Unique string representing the application ID
 	 */
-	public Unique(final String APP_ID) {
+	public Unique4j(final String APP_ID) {
 		this(APP_ID, true);
 	}
 	
@@ -144,7 +144,7 @@ public abstract class Unique {
 	 * @param APP_ID Unique string representing the application ID
 	 * @param AUTO_EXIT If true, automatically exit the application for subsequent instances
 	 */
-	public Unique(final String APP_ID, final boolean AUTO_EXIT) {
+	public Unique4j(final String APP_ID, final boolean AUTO_EXIT) {
 		this.APP_ID = APP_ID;
 		this.AUTO_EXIT = AUTO_EXIT;
 	}

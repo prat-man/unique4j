@@ -229,12 +229,18 @@ public abstract class Unique4j {
 									// read message from client
 									String message = br.readLine();
 									
-									// unescape null
-									if (message != null && message.contentEquals("null")) message = null;
-									else message = message.replace("\\null", "null");
+									// unescape nulls, newlines, and carriage returns
+									if (message != null) {
+										if (message.contentEquals("null")) message = null;
+										else {
+											message = message.replace("\\null", "null");
+											message = message.replace("\\n", "\n");
+											message = message.replace("\\r", "\r");
+										}
+									}
 									
 									// write response to client
-									pw.write(APP_ID + "\r\n");
+									pw.write(APP_ID + "\n");
 									pw.flush();
 									
 									// close writer and reader
@@ -293,9 +299,13 @@ public abstract class Unique4j {
 				// get message to be sent to first instance
 				String message = sendMessage();
 				
-				// escape null
+				// escape nulls, newlines, and carriage returns
 				if (message == null) message = "null";
-				else message = message.replace("null", "\\null");
+				else {
+					message = message.replace("null", "\\null");
+					message = message.replace("\n", "\\n");
+					message = message.replace("\r", "\\r");
+				}
 				
 				// open writer
 				OutputStream os = socket.getOutputStream();
@@ -307,7 +317,7 @@ public abstract class Unique4j {
 				BufferedReader br = new BufferedReader(isr);
 				
 				// write message to server
-				pw.write(message + "\r\n");
+				pw.write(message + "\n");
 				pw.flush();
 				
 				// read response from server

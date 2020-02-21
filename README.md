@@ -42,7 +42,7 @@ Declare an application unique ID which is a common constant for all the instance
 Create an instance of <code>Unique</code> class.
 
     // create unique instance
-    Unique unique = new Unique(APP_ID) {
+    Unique4j unique = new Unique4j(APP_ID) {
         @Override
         public void receiveMessage(String message) {
             // print received message (timestamp)
@@ -81,13 +81,65 @@ Create an instance of <code>Unique</code> class.
 Alternatively, you can declare to turn off automatic exit for subsequent instances.
 
     // create unique instance with AUTO_EXIT turned off
-    Unique unique = new Unique(APP_ID,
-                               false) // second parameter is for AUTO_EXIT (false turns it off)
+    Unique4j unique = new Unique4j(APP_ID,
+                                   false) // second parameter is for AUTO_EXIT (false turns it off)
     { 
         ...
         // Note: beforeExit() method, even if overridden, is never invoked if AUTO_EXIT is turned off
     }
     
+<br>
+
+Sending list of strings instead of a single string message.
+    
+    // create Unique4j instance
+    Unique4j unique = new Unique4jList(APP_ID) {
+        @Override
+        protected List<String> sendMessageList() {
+            List<String> messageList = new ArrayList<String>();
+
+            messageList.add("Message 1");
+            messageList.add("Message 2");
+            messageList.add("Message 3");
+            messageList.add("Message 4");
+
+            return messageList;
+        }
+
+        @Override
+        protected void receiveMessageList(List<String> messageList) {
+            for (String message : messageList) {
+                System.out.println(message);
+            }
+        }
+    };
+
+<br>
+
+Sending map of string key-value pairs instead of a single string message.
+    
+    // create Unique4j instance
+    Unique4j unique = new Unique4jMap(APP_ID) {
+        @Override
+        protected Map<String, String> sendMessageMap() {
+            Map<String, String> messageMap = new HashMap<String, String>();
+            
+            messageMap.put("key1", "Message 1");
+            messageMap.put("key2", "Message 2");
+            messageMap.put("key3", "Message 3");
+            messageMap.put("key4", "Message 4");
+            
+            return messageMap;
+        }
+    
+        @Override
+        protected void receiveMessageMap(Map<String, String> messageMap) {
+            for (Entry<String, String> entry : messageMap.entrySet()) {
+                System.out.println(entry.getKey() + " : " + entry.getValue());
+            }
+        }
+    };
+
 <br>
 
 Try to obtain a lock using the <code>Unique</code> object.
@@ -120,7 +172,7 @@ Free the lock using the <code>Unique</code> object.
 
 ## Demonstration
 
-To put it all together, the following is a complete example of the usage and capabilities of Unique4j.
+To put it all together, the following is a simple example of the basic usage of Unique4j.
 
     import java.sql.Timestamp;
     import java.util.Date;
@@ -136,7 +188,7 @@ To put it all together, the following is a complete example of the usage and cap
         public static void main(String[] args) throws Unique4jException, InterruptedException {
 
             // create unique instance
-            Unique unique = new Unique(APP_ID) {
+            Unique4j unique = new Unique4j(APP_ID) {
                 @Override
                 public void receiveMessage(String message) {
                     // print received message (timestamp)

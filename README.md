@@ -177,7 +177,7 @@ To put it all together, the following is a simple example of the basic usage of 
     import java.sql.Timestamp;
     import java.util.Date;
     
-    import tk.pratanumandal.unique4j.Unique;
+    import tk.pratanumandal.unique4j.Unique4j;
     import tk.pratanumandal.unique4j.exception.Unique4jException;
     
     public class Unique4jDemo {

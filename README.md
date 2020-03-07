@@ -19,13 +19,13 @@ It is compatible with Java 1.6+ and is platform independent.
     <dependency>
         <groupId>tk.pratanumandal</groupId>
         <artifactId>unique4j</artifactId>
-        <version>1.2.1</version>
+        <version>1.3</version>
     </dependency>
 
 ### Gradle
 
     dependencies {
-        implementation 'tk.pratanumandal:unique4j:1.2.1'
+        implementation 'tk.pratanumandal:unique4j:1.3'
     }
 
 <br>

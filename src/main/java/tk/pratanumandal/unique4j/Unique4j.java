@@ -19,6 +19,8 @@ package tk.pratanumandal.unique4j;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -28,7 +30,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 import java.io.RandomAccessFile;
 import java.net.InetAddress;
 import java.net.ServerSocket;
@@ -219,33 +220,38 @@ public abstract class Unique4j {
 								try {
 									// open writer
 									OutputStream os = socket.getOutputStream();
-									PrintWriter pw = new PrintWriter(os, true);
+									DataOutputStream dos = new DataOutputStream(os);
 									
 									// open reader
 									InputStream is = socket.getInputStream();
-									InputStreamReader isr = new InputStreamReader(is);
-									BufferedReader br = new BufferedReader(isr);
+									DataInputStream dis = new DataInputStream(is);
 									
-									// read message from client
-									String message = br.readLine();
+									// read message length from client
+									int length = dis.readInt();
 									
-									// unescape nulls, newlines, and carriage returns
-									if (message != null) {
-										if (message.contentEquals("null")) message = null;
-										else {
-											message = message.replace("\\null", "null");
-											message = message.replace("\\n", "\n");
-											message = message.replace("\\r", "\r");
-										}
+									// read message string from client
+									String message = null;
+									if (length > -1) {
+										byte[] messageBytes = new byte[length];
+										int bytesRead = dis.read(messageBytes, 0, length);
+										message = new String(messageBytes, 0, bytesRead, "UTF-8");
 									}
 									
 									// write response to client
-									pw.write(APP_ID + "\n");
-									pw.flush();
+									if (APP_ID == null) {
+										dos.writeInt(-1);
+									}
+									else {
+										byte[] appId = APP_ID.getBytes("UTF-8");
+										
+										dos.writeInt(appId.length);
+										dos.write(appId);
+									}
+									dos.flush();
 									
 									// close writer and reader
-									pw.close();
-									br.close();
+									dos.close();
+									dis.close();
 									
 									// perform user action on message
 									receiveMessage(message);
@@ -299,34 +305,41 @@ public abstract class Unique4j {
 				// get message to be sent to first instance
 				String message = sendMessage();
 				
-				// escape nulls, newlines, and carriage returns
-				if (message == null) message = "null";
-				else {
-					message = message.replace("null", "\\null");
-					message = message.replace("\n", "\\n");
-					message = message.replace("\r", "\\r");
-				}
-				
 				// open writer
 				OutputStream os = socket.getOutputStream();
-				PrintWriter pw = new PrintWriter(os, true);
+				DataOutputStream dos = new DataOutputStream(os);
 				
 				// open reader
 				InputStream is = socket.getInputStream();
-				InputStreamReader isr = new InputStreamReader(is);
-				BufferedReader br = new BufferedReader(isr);
+				DataInputStream dis = new DataInputStream(is);
 				
 				// write message to server
-				pw.write(message + "\n");
-				pw.flush();
+				if (message == null) {
+					dos.writeInt(-1);
+				}
+				else {
+					byte[] messageBytes = message.getBytes("UTF-8");
+					
+					dos.writeInt(messageBytes.length);
+					dos.write(messageBytes);
+				}
 				
-				// read response from server
-				String response = br.readLine();
-				if (response == null) response = new String();
+				dos.flush();
+				
+				// read response length from server
+				int length = dis.readInt();
+				
+				// read response string from server
+				String response = null;
+				if (length > -1) {
+					byte[] responseBytes = new byte[length];
+					int bytesRead = dis.read(responseBytes, 0, length);
+					response = new String(responseBytes, 0, bytesRead, "UTF-8");
+				}
 				
 				// close writer and reader
-				pw.close();
-				br.close();
+				dos.close();
+				dis.close();
 				
 				if (response.equals(APP_ID)) {
 					// validation successful

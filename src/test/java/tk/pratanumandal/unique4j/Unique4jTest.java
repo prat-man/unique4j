@@ -130,7 +130,75 @@ public class Unique4jTest {
 		}
 		
 		// assert if message is sent correctly
-		Assert.assertEquals(received.get(0), message);
+		Assert.assertEquals(message, received.get(0));
+		
+		// try to free the locks before exiting program
+		unique1.freeLock();
+		
+		unique2.freeLock();
+		
+	}
+	
+	@Test
+	public void testUnique4jEmpty() throws Unique4jException {
+		
+		final Object lock = new Object();
+		
+		final List<String> received = new ArrayList<String>();
+		
+		final String message = new String();
+		
+		Unique4j unique1 = new Unique4j(APP_ID, false) {
+			@Override
+			protected String sendMessage() {
+				// send null
+				return null;
+			}
+			
+			@Override
+			protected void receiveMessage(String arg0) {
+				// to assert on main thread
+				received.add(arg0);
+				
+				// notify that message has been received
+				synchronized (lock) {
+					lock.notify();
+				}
+			}
+		};
+		
+		// try to obtain lock
+		unique1.acquireLock();
+		
+		Unique4j unique2 = new Unique4j(APP_ID, false) {
+			@Override
+			protected String sendMessage() {
+				// send message
+				return message;
+			}
+			
+			@Override
+			protected void receiveMessage(String arg0) {
+				// do nothing
+			}
+		};
+		
+		// try to obtain lock
+		unique2.acquireLock();
+		
+		// wait until message is received
+		if (received.isEmpty()) {
+			synchronized (lock) {
+				try {
+					lock.wait();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		// assert if message is sent correctly
+		Assert.assertEquals(message, received.get(0));
 		
 		// try to free the locks before exiting program
 		unique1.freeLock();
@@ -331,7 +399,7 @@ public class Unique4jTest {
 		}
 		
 		// assert if message is sent correctly
-		Assert.assertEquals(received.get(0), message);
+		Assert.assertEquals(message, received.get(0));
 		
 		// try to free the locks before exiting program
 		unique1.freeLock();
@@ -481,6 +549,78 @@ public class Unique4jTest {
 	}
 	
 	@Test
+	public void testUnique4jListNewline() throws Unique4jException {
+		
+		final Object lock = new Object();
+		
+		final List<String> received = new ArrayList<String>();
+		
+		final List<String> messageList = new ArrayList<String>();
+		messageList.add("C:\\Users\\Pratanu\nMandal\\Desktop\\rptMrExam.pdf");
+		messageList.add("C:\\Users\\Pratanu Mandal\\Desktop\\nptMrExam.pdf");
+		messageList.add("C:\\Users\\Pratanu Mandal\\Desktop\\'rptMrExam.pdf");
+		messageList.add("C:\\Users\\Pratanu Mandal\\Desktop\\rptMrExam.pdf");
+		
+		Unique4j unique1 = new Unique4jList(APP_ID, false) {
+			@Override
+			protected List<String> sendMessageList() {
+				// send null
+				return null;
+			}
+
+			@Override
+			protected void receiveMessageList(List<String> message) {
+				// to assert on main thread
+				received.addAll(message);
+				
+				// notify that message has been received
+				synchronized (lock) {
+					lock.notify();
+				}
+			}
+		};
+		
+		// try to obtain lock
+		unique1.acquireLock();
+		
+		Unique4j unique2 = new Unique4jList(APP_ID, false) {
+			@Override
+			protected List<String> sendMessageList() {
+				// send message list
+				return messageList;
+			}
+
+			@Override
+			protected void receiveMessageList(List<String> message) {
+				// do nothing
+			}
+		};
+		
+		// try to obtain lock
+		unique2.acquireLock();
+		
+		// wait until message is received
+		if (received.isEmpty()) {
+			synchronized (lock) {
+				try {
+					lock.wait();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		// assert if message is sent correctly
+		Assert.assertEquals(received, messageList);
+		
+		// try to free the locks before exiting program
+		unique1.freeLock();
+		
+		unique2.freeLock();
+		
+	}
+	
+	@Test
 	public void testUnique4jListNull() throws Unique4jException {
 		
 		final Object lock = new Object();
@@ -558,6 +698,78 @@ public class Unique4jTest {
 		messageMap.put("23vvf2", "ijvnfpp389528$#$@520sdf.213sgv7");
 		messageMap.put("23vvf3", "ijvnfpp389528$#$@520sdf.213sgv8");
 		messageMap.put("23vvf4", "ijvnfpp389528$#$@520sdf.213sgv9");
+		
+		Unique4j unique1 = new Unique4jMap(APP_ID, false) {
+			@Override
+			protected Map<String, String> sendMessageMap() {
+				// send null
+				return null;
+			}
+
+			@Override
+			protected void receiveMessageMap(Map<String, String> message) {
+				// to assert on main thread
+				received.putAll(message);
+				
+				// notify that message has been received
+				synchronized (lock) {
+					lock.notify();
+				}
+			}
+		};
+		
+		// try to obtain lock
+		unique1.acquireLock();
+		
+		Unique4j unique2 = new Unique4jMap(APP_ID, false) {
+			@Override
+			protected Map<String, String> sendMessageMap() {
+				// send message list
+				return messageMap;
+			}
+
+			@Override
+			protected void receiveMessageMap(Map<String, String> message) {
+				// do nothing
+			}
+		};
+		
+		// try to obtain lock
+		unique2.acquireLock();
+		
+		// wait until message is received
+		if (received.isEmpty()) {
+			synchronized (lock) {
+				try {
+					lock.wait();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		// assert if message is sent correctly
+		Assert.assertEquals(received, messageMap);
+		
+		// try to free the locks before exiting program
+		unique1.freeLock();
+		
+		unique2.freeLock();
+		
+	}
+	
+	@Test
+	public void testUnique4jMapNewline() throws Unique4jException {
+		
+		final Object lock = new Object();
+		
+		final Map<String, String> received = new HashMap<String, String>();
+		
+		final Map<String, String> messageMap = new HashMap<String, String>();
+		messageMap.put("23vvf1", "C:\\Users\\Pratanu\nMandal\\Desktop\\rptMrExam.pdf");
+		messageMap.put("23vvf2", "C:\\Users\\Pratanu Mandal\\Desktop\\nptMrExam.pdf");
+		messageMap.put("23vvf3", "C:\\Users\\Pratanu Mandal\\Desktop\\'rptMrExam.pdf");
+		messageMap.put("23vvf4", "C:\\Users\\Pratanu Mandal\\Desktop\\rptMrExam.pdf");
 		
 		Unique4j unique1 = new Unique4jMap(APP_ID, false) {
 			@Override

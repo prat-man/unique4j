@@ -331,7 +331,7 @@ public class Unique4jTest {
 		
 		// assert if message is sent correctly
 		Assert.assertNotNull(received.get(0));
-		Assert.assertEquals(received.get(0), "null");
+		Assert.assertEquals("null", received.get(0));
 		
 		// try to free the locks before exiting program
 		unique1.freeLock();
@@ -467,7 +467,7 @@ public class Unique4jTest {
 		}
 		
 		// assert if message is sent correctly
-		Assert.assertEquals(received.get(0), message);
+		Assert.assertEquals(message, received.get(0));
 		
 		// try to free the locks before exiting program
 		unique1.freeLock();
@@ -539,7 +539,7 @@ public class Unique4jTest {
 		}
 		
 		// assert if message is sent correctly
-		Assert.assertEquals(received, messageList);
+		Assert.assertEquals(messageList, received);
 		
 		// try to free the locks before exiting program
 		unique1.freeLock();
@@ -611,7 +611,7 @@ public class Unique4jTest {
 		}
 		
 		// assert if message is sent correctly
-		Assert.assertEquals(received, messageList);
+		Assert.assertEquals(messageList, received);
 		
 		// try to free the locks before exiting program
 		unique1.freeLock();
@@ -749,7 +749,7 @@ public class Unique4jTest {
 		}
 		
 		// assert if message is sent correctly
-		Assert.assertEquals(received, messageMap);
+		Assert.assertEquals(messageMap, received);
 		
 		// try to free the locks before exiting program
 		unique1.freeLock();
@@ -821,7 +821,7 @@ public class Unique4jTest {
 		}
 		
 		// assert if message is sent correctly
-		Assert.assertEquals(received, messageMap);
+		Assert.assertEquals(messageMap, received);
 		
 		// try to free the locks before exiting program
 		unique1.freeLock();

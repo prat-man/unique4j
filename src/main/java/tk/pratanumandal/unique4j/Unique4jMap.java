@@ -1,5 +1,6 @@
 package tk.pratanumandal.unique4j;
 
+import java.net.InetAddress;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -90,6 +91,43 @@ public abstract class Unique4jMap extends Unique4j {
 	 */
 	public Unique4jMap(String APP_ID, boolean AUTO_EXIT) {
 		super(APP_ID, AUTO_EXIT);
+	}
+	
+	/**
+	 * Parameterized constructor.<br>
+	 * This constructor allows to explicitly specify the address and port of the server socket.<br><br>
+	 * 
+	 * The APP_ID must be as unique as possible.
+	 * Avoid generic names like "my_app_id" or "hello_world".<br>
+	 * A good strategy is to use the entire package name (group ID + artifact ID) along with some random characters.
+	 * 
+	 * @since 1.5
+	 * 
+	 * @param APP_ID Unique string representing the application ID
+	 * @param ADDRESS InetAddress of the server socket
+	 * @param PORT Port of the server socket
+	 */
+	public Unique4jMap(String APP_ID, InetAddress ADDRESS, int PORT) {
+		super(APP_ID, ADDRESS, PORT);
+	}
+
+	/**
+	 * Parameterized constructor.<br>
+	 * This constructor allows to explicitly specify the exit strategy for subsequent instances and the address and port of the server socket.<br><br>
+	 * 
+	 * The APP_ID must be as unique as possible.
+	 * Avoid generic names like "my_app_id" or "hello_world".<br>
+	 * A good strategy is to use the entire package name (group ID + artifact ID) along with some random characters.
+	 * 
+	 * @since 1.5
+	 * 
+	 * @param APP_ID Unique string representing the application ID
+	 * @param AUTO_EXIT If true, automatically exit the application for subsequent instances
+	 * @param ADDRESS InetAddress of the server socket
+	 * @param PORT Port of the server socket
+	 */
+	public Unique4jMap(String APP_ID, boolean AUTO_EXIT, InetAddress ADDRESS, int PORT) {
+		super(APP_ID, AUTO_EXIT, ADDRESS, PORT);
 	}
 
 	/**

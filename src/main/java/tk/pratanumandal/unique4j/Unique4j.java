@@ -229,7 +229,7 @@ public abstract class Unique4j {
 	 */
 	public boolean acquireLock() throws Unique4jException {
 		// try to obtain port number from lock file
-		port = lockFile();
+		port = PORT == DYNAMIC_PORT ? lockFile() : PORT;
 		
 		if (port == -1) {
 			// failed to fetch port number
@@ -259,6 +259,9 @@ public abstract class Unique4j {
 					port++;
 				}
 			}
+			
+			// try to lock file
+			lockFile(port);
 		}
 		else {
 			// use static port policy
@@ -269,9 +272,6 @@ public abstract class Unique4j {
 				throw new Unique4jException(e);
 			}
 		}
-		
-		// try to lock file
-		lockFile(port);
 		
 		// server created successfully; this is the first instance
 		// keep listening for data from other instances

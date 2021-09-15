@@ -15,7 +15,7 @@
  * 
  */
 
-package tk.pratanumandal.unique4j.exception;
+package in.pratanumandal.unique4j.exception;
 
 /**
  * The <code>Unique4jException</code> class is a wrapper for all exceptions thrown from Unique4j.

@@ -15,7 +15,7 @@
  * 
  */
 
-package tk.pratanumandal.unique4j;
+package in.pratanumandal.unique4j;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,13 +29,17 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
-import tk.pratanumandal.unique4j.exception.Unique4jException;
+import in.pratanumandal.unique4j.PortPolicy;
+import in.pratanumandal.unique4j.Unique4j;
+import in.pratanumandal.unique4j.Unique4jList;
+import in.pratanumandal.unique4j.Unique4jMap;
+import in.pratanumandal.unique4j.exception.Unique4jException;
 
 public class Unique4jTest {
 	
 	private static final String TEMP_DIR = System.getProperty("java.io.tmpdir");
 	
-	private static final String APP_ID = "tk.pratanumandal.unique4j-mlsdvo-20191511-#j.6";
+	private static final String APP_ID = "in.pratanumandal.unique4j-mlsdvo-20191511-#j.6";
 	
 	@Test
 	public void testUnique4jBasic() throws Unique4jException {

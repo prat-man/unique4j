@@ -15,24 +15,11 @@
  * 
  */
 
-package tk.pratanumandal.unique4j;
-
 /**
- * Policy used to assign port.
+ * The <code>in.pratanumandal.unique4j.exception</code> package contains exception classes of Unique4j library.
  * 
  * @author Pratanu Mandal
- * @since 1.5
+ * @since 1.1
+ *
  */
-public enum PortPolicy {
-	
-	/**
-	 * Use static port if available; throw exception otherwise.
-	 */
-	STATIC,
-	
-	/**
-	 * Dynamically assign a port based on availability.
-	 */
-	DYNAMIC
-
-}
+package in.pratanumandal.unique4j.exception;

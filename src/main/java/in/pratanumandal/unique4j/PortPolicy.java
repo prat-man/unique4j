@@ -15,11 +15,24 @@
  * 
  */
 
+package in.pratanumandal.unique4j;
+
 /**
- * The <code>tk.pratanumandal.unique4j</code> package is the root package of Unique4j library.
+ * Policy used to assign port.
  * 
  * @author Pratanu Mandal
- * @since 1.0
- *
+ * @since 1.5
  */
-package tk.pratanumandal.unique4j;
+public enum PortPolicy {
+	
+	/**
+	 * Use static port if available; throw exception otherwise.
+	 */
+	STATIC,
+	
+	/**
+	 * Dynamically assign a port based on availability.
+	 */
+	DYNAMIC
+
+}

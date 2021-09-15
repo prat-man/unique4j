@@ -15,7 +15,7 @@
  * 
  */
 
-package tk.pratanumandal.unique4j;
+package in.pratanumandal.unique4j;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -38,7 +38,7 @@ import java.net.SocketException;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 
-import tk.pratanumandal.unique4j.exception.Unique4jException;
+import in.pratanumandal.unique4j.exception.Unique4jException;
 
 /**
  * The <code>Unique4j</code> class is the primary logical entry point to the library.<br>
@@ -46,7 +46,7 @@ import tk.pratanumandal.unique4j.exception.Unique4jException;
  * 
  * <pre>
  *	// unique application ID
- *	String APP_ID = "tk.pratanumandal.unique4j-mlsdvo-20191511-#j.6";
+ *	String APP_ID = "in.pratanumandal.unique4j-mlsdvo-20191511-#j.6";
  *	
  *	// create Unique4j instance
  *	Unique4j unique = new Unique4j(APP_ID) {
@@ -551,7 +551,7 @@ public abstract class Unique4j {
 	 * 
 	 * @return the port of the server socket
 	 */
-	public int getPort() throws Unique4jException {
+	public int getPort() {
 		return port;
 	}
 	

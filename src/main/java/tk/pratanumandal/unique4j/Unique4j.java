@@ -94,6 +94,9 @@ public abstract class Unique4j {
 	// system temporary directory path
 	private static final String TEMP_DIR = System.getProperty("java.io.tmpdir");
 	
+	// loopback address 
+	private static final InetAddress ADDRESS = InetAddress.getLoopbackAddress();
+	
 	/**
 	 * Unique string representing the application ID.<br><br>
 	 * 
@@ -106,7 +109,13 @@ public abstract class Unique4j {
 	// auto exit from application or not
 	private final boolean AUTO_EXIT;
 	
-	// lock server port
+	// lock server port or port policy
+	private final int PORT;
+	
+	// port policy
+	private final PortPolicy PORT_POLICY;
+	
+	// actual lock server port
 	private int port;
 	
 	// lock server socket
@@ -129,7 +138,7 @@ public abstract class Unique4j {
 	 * @param APP_ID Unique string representing the application ID
 	 */
 	public Unique4j(final String APP_ID) {
-		this(APP_ID, true);
+		this(APP_ID, true, PORT_START, PortPolicy.DYNAMIC);
 	}
 	
 	/**
@@ -146,8 +155,48 @@ public abstract class Unique4j {
 	 * @param AUTO_EXIT If true, automatically exit the application for subsequent instances
 	 */
 	public Unique4j(final String APP_ID, final boolean AUTO_EXIT) {
+		this(APP_ID, AUTO_EXIT, PORT_START, PortPolicy.DYNAMIC);
+	}
+	
+	/**
+	 * Parameterized constructor.<br>
+	 * This constructor allows to explicitly specify the exit strategy for subsequent instances.<br><br>
+	 * 
+	 * The APP_ID must be as unique as possible.
+	 * Avoid generic names like "my_app_id" or "hello_world".<br>
+	 * A good strategy is to use the entire package name (group ID + artifact ID) along with some random characters.
+	 * 
+	 * @since 1.5
+	 * 
+	 * @param APP_ID Unique string representing the application ID
+	 * @param PORT Port (or starting port in case of dynamic port policy) of the server socket
+	 * @param PORT_POLICY Port policy to use - STATIC or DYNAMIC
+	 */
+	public Unique4j(final String APP_ID, final int PORT, final PortPolicy PORT_POLICY) {
+		this(APP_ID, true, PORT, PORT_POLICY);
+	}
+	
+	/**
+	 * Parameterized constructor.<br>
+	 * This constructor allows to explicitly specify the exit strategy for subsequent instances.<br><br>
+	 * 
+	 * The APP_ID must be as unique as possible.
+	 * Avoid generic names like "my_app_id" or "hello_world".<br>
+	 * A good strategy is to use the entire package name (group ID + artifact ID) along with some random characters.
+	 * 
+	 * @since 1.5
+	 * 
+	 * @param APP_ID Unique string representing the application ID
+	 * @param AUTO_EXIT If true, automatically exit the application for subsequent instances
+	 * @param PORT Port (or starting port in case of dynamic port policy) of the server socket
+	 * @param PORT_POLICY Port policy to use - STATIC or DYNAMIC
+	 */
+	public Unique4j(final String APP_ID, final boolean AUTO_EXIT, final int PORT, final PortPolicy PORT_POLICY) {
 		this.APP_ID = APP_ID;
 		this.AUTO_EXIT = AUTO_EXIT;
+		this.PORT = PORT;
+		this.port = PORT;
+		this.PORT_POLICY = PORT_POLICY;
 	}
 	
 	/**
@@ -171,7 +220,9 @@ public abstract class Unique4j {
 	 */
 	public boolean acquireLock() throws Unique4jException {
 		// try to obtain port number from lock file
-		port = lockFile();
+		if (PORT_POLICY == PortPolicy.DYNAMIC) {
+			port = readPortFromLockFile();
+		}
 		
 		if (port == -1) {
 			// failed to fetch port number
@@ -190,18 +241,30 @@ public abstract class Unique4j {
 	// start the server
 	private void startServer() throws Unique4jException {
 		// try to create server
-		port = PORT_START;
-		while (true) {
+		if (PORT_POLICY == PortPolicy.DYNAMIC) {
+			// use dynamic port policy
+			port = PORT;
+			while (true) {
+				try {
+					server = new ServerSocket(port, 0, ADDRESS);
+					break;
+				} catch (IOException e) {
+					port++;
+				}
+			}
+			
+			// try to lock file
+			writePortToLockFile(port);
+		}
+		else {
+			// use static port policy
+			port = PORT;
 			try {
-				server = new ServerSocket(port);
-				break;
+				server = new ServerSocket(port, 0, ADDRESS);
 			} catch (IOException e) {
-				port++;
+				throw new Unique4jException(e);
 			}
 		}
-		
-		// try to lock file
-		lockFile(port);
 		
 		// server created successfully; this is the first instance
 		// keep listening for data from other instances
@@ -282,18 +345,10 @@ public abstract class Unique4j {
 	
 	// do client tasks
 	private void doClient() throws Unique4jException {
-		// get localhost address
-		InetAddress address = null;
-		try {
-			address = InetAddress.getByName(null);
-		} catch (UnknownHostException e) {
-			throw new Unique4jException(e);
-		}
-		
 		// try to establish connection to server
 		Socket socket = null;
 		try {
-			socket = new Socket(address, port);
+			socket = new Socket(ADDRESS, port);
 		} catch (IOException e) {
 			// connection failed try to start server
 			startServer();
@@ -368,7 +423,7 @@ public abstract class Unique4j {
 	}
 	
 	// try to get port from lock file
-	private int lockFile() throws Unique4jException {
+	private int readPortFromLockFile() throws Unique4jException {
 		// lock file path
 		String filePath = TEMP_DIR + File.separator + APP_ID + ".lock";
 		File file = new File(filePath);
@@ -396,7 +451,7 @@ public abstract class Unique4j {
 	}
 	
 	// try to write port to lock file
-	private void lockFile(int port) throws Unique4jException {
+	private void writePortToLockFile(int port) throws Unique4jException {
 		// lock file path
 		String filePath = TEMP_DIR + File.separator + APP_ID + ".lock";
 		File file = new File(filePath);
@@ -482,6 +537,23 @@ public abstract class Unique4j {
 		} catch (IOException e) {
 			throw new Unique4jException(e);
 		}
+	}
+	
+	/**
+	 * Get the possible port of server socket.<br>
+	 * Use this method after invoking <code>acquireLock()</code> method. The returned port is not a guarantee.<br><br>
+	 * 
+	 * For DYNAMIC_PORT policy, it returns -1 before invoking <code>acquireLock()</code>.
+	 * After invoking <code>acquireLock()</code>, it returns a possible port of the server.<br><br>
+	 *
+	 * For a static port policy, it always returns the static port.
+	 * 
+	 * @since 1.5
+	 * 
+	 * @return the port of the server socket
+	 */
+	public int getPort() throws Unique4jException {
+		return port;
 	}
 	
 	/**

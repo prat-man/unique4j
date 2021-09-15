@@ -942,7 +942,7 @@ public class Unique4jTest {
 		
 		final String message = "ijvnfpp389528$#$@520sdf.213sgv8";
 		
-		Unique4j unique1 = new Unique4j(APP_ID, false, 8080) {
+		Unique4j unique1 = new Unique4j(APP_ID, false, 8080, PortPolicy.DYNAMIC) {
 			@Override
 			protected String sendMessage() {
 				// send null
@@ -964,7 +964,7 @@ public class Unique4jTest {
 		// try to obtain lock
 		unique1.acquireLock();
 		
-		Unique4j unique2 = new Unique4j(APP_ID, false, 80) {
+		Unique4j unique2 = new Unique4j(APP_ID, false, 8080, PortPolicy.DYNAMIC) {
 			@Override
 			protected String sendMessage() {
 				// send message

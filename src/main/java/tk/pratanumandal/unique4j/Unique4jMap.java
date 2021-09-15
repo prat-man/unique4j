@@ -62,7 +62,7 @@ import com.google.gson.JsonParser;
  *
  */
 public abstract class Unique4jMap extends Unique4j {
-	
+
 	/**
 	 * Parameterized constructor.<br>
 	 * This constructor configures to automatically exit the application for subsequent instances.<br><br>
@@ -90,6 +90,43 @@ public abstract class Unique4jMap extends Unique4j {
 	 */
 	public Unique4jMap(String APP_ID, boolean AUTO_EXIT) {
 		super(APP_ID, AUTO_EXIT);
+	}
+	
+	/**
+	 * Parameterized constructor.<br>
+	 * This constructor allows to explicitly specify the exit strategy for subsequent instances.<br><br>
+	 * 
+	 * The APP_ID must be as unique as possible.
+	 * Avoid generic names like "my_app_id" or "hello_world".<br>
+	 * A good strategy is to use the entire package name (group ID + artifact ID) along with some random characters.
+	 * 
+	 * @since 1.5
+	 * 
+	 * @param APP_ID Unique string representing the application ID
+	 * @param PORT Port (or starting port in case of dynamic port policy) of the server socket
+	 * @param PORT_POLICY Port policy to use - STATIC or DYNAMIC
+	 */
+	public Unique4jMap(String APP_ID, int PORT, PortPolicy PORT_POLICY) {
+		super(APP_ID, PORT, PORT_POLICY);
+	}
+	
+	/**
+	 * Parameterized constructor.<br>
+	 * This constructor allows to explicitly specify the exit strategy for subsequent instances.<br><br>
+	 * 
+	 * The APP_ID must be as unique as possible.
+	 * Avoid generic names like "my_app_id" or "hello_world".<br>
+	 * A good strategy is to use the entire package name (group ID + artifact ID) along with some random characters.
+	 * 
+	 * @since 1.5
+	 * 
+	 * @param APP_ID Unique string representing the application ID
+	 * @param AUTO_EXIT If true, automatically exit the application for subsequent instances
+	 * @param PORT Port (or starting port in case of dynamic port policy) of the server socket
+	 * @param PORT_POLICY Port policy to use - STATIC or DYNAMIC
+	 */
+	public Unique4jMap(String APP_ID, boolean AUTO_EXIT, int PORT, PortPolicy PORT_POLICY) {
+		super(APP_ID, AUTO_EXIT, PORT, PORT_POLICY);
 	}
 
 	/**

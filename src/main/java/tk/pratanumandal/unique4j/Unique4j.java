@@ -98,13 +98,6 @@ public abstract class Unique4j {
 	private static final InetAddress ADDRESS = InetAddress.getLoopbackAddress();
 	
 	/**
-	 * Dynamically assign a port based on availability.
-	 * 
-	 * @since 1.5
-	 */
-	public static final int DYNAMIC_PORT = -1;
-	
-	/**
 	 * Unique string representing the application ID.<br><br>
 	 * 
 	 * The APP_ID must be as unique as possible.
@@ -118,6 +111,9 @@ public abstract class Unique4j {
 	
 	// lock server port or port policy
 	private final int PORT;
+	
+	// port policy
+	private final PortPolicy PORT_POLICY;
 	
 	// actual lock server port
 	private int port;
@@ -142,7 +138,7 @@ public abstract class Unique4j {
 	 * @param APP_ID Unique string representing the application ID
 	 */
 	public Unique4j(final String APP_ID) {
-		this(APP_ID, true, DYNAMIC_PORT);
+		this(APP_ID, true, PORT_START, PortPolicy.DYNAMIC);
 	}
 	
 	/**
@@ -159,18 +155,48 @@ public abstract class Unique4j {
 	 * @param AUTO_EXIT If true, automatically exit the application for subsequent instances
 	 */
 	public Unique4j(final String APP_ID, final boolean AUTO_EXIT) {
-		this(APP_ID, AUTO_EXIT, DYNAMIC_PORT);
+		this(APP_ID, AUTO_EXIT, PORT_START, PortPolicy.DYNAMIC);
 	}
 	
-	public Unique4j(final String APP_ID, final int PORT) {
-		this(APP_ID, true, PORT);
+	/**
+	 * Parameterized constructor.<br>
+	 * This constructor allows to explicitly specify the exit strategy for subsequent instances.<br><br>
+	 * 
+	 * The APP_ID must be as unique as possible.
+	 * Avoid generic names like "my_app_id" or "hello_world".<br>
+	 * A good strategy is to use the entire package name (group ID + artifact ID) along with some random characters.
+	 * 
+	 * @since 1.5
+	 * 
+	 * @param APP_ID Unique string representing the application ID
+	 * @param PORT Port (or starting port in case of dynamic port policy) of the server socket
+	 * @param PORT_POLICY Port policy to use - STATIC or DYNAMIC
+	 */
+	public Unique4j(final String APP_ID, final int PORT, final PortPolicy PORT_POLICY) {
+		this(APP_ID, true, PORT, PORT_POLICY);
 	}
 	
-	public Unique4j(final String APP_ID, final boolean AUTO_EXIT, final int PORT) {
+	/**
+	 * Parameterized constructor.<br>
+	 * This constructor allows to explicitly specify the exit strategy for subsequent instances.<br><br>
+	 * 
+	 * The APP_ID must be as unique as possible.
+	 * Avoid generic names like "my_app_id" or "hello_world".<br>
+	 * A good strategy is to use the entire package name (group ID + artifact ID) along with some random characters.
+	 * 
+	 * @since 1.5
+	 * 
+	 * @param APP_ID Unique string representing the application ID
+	 * @param AUTO_EXIT If true, automatically exit the application for subsequent instances
+	 * @param PORT Port (or starting port in case of dynamic port policy) of the server socket
+	 * @param PORT_POLICY Port policy to use - STATIC or DYNAMIC
+	 */
+	public Unique4j(final String APP_ID, final boolean AUTO_EXIT, final int PORT, final PortPolicy PORT_POLICY) {
 		this.APP_ID = APP_ID;
 		this.AUTO_EXIT = AUTO_EXIT;
 		this.PORT = PORT;
 		this.port = PORT;
+		this.PORT_POLICY = PORT_POLICY;
 	}
 	
 	/**
@@ -194,7 +220,7 @@ public abstract class Unique4j {
 	 */
 	public boolean acquireLock() throws Unique4jException {
 		// try to obtain port number from lock file
-		if (PORT == DYNAMIC_PORT) {
+		if (PORT_POLICY == PortPolicy.DYNAMIC) {
 			port = readPortFromLockFile();
 		}
 		
@@ -215,9 +241,9 @@ public abstract class Unique4j {
 	// start the server
 	private void startServer() throws Unique4jException {
 		// try to create server
-		if (PORT == DYNAMIC_PORT) {
+		if (PORT_POLICY == PortPolicy.DYNAMIC) {
 			// use dynamic port policy
-			port = PORT_START;
+			port = PORT;
 			while (true) {
 				try {
 					server = new ServerSocket(port, 0, ADDRESS);

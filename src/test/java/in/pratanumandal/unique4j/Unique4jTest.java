@@ -29,10 +29,6 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
-import in.pratanumandal.unique4j.PortPolicy;
-import in.pratanumandal.unique4j.Unique4j;
-import in.pratanumandal.unique4j.Unique4jList;
-import in.pratanumandal.unique4j.Unique4jMap;
 import in.pratanumandal.unique4j.exception.Unique4jException;
 
 public class Unique4jTest {

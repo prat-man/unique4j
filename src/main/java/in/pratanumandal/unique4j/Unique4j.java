@@ -488,12 +488,12 @@ public abstract class Unique4j {
 	/**
 	 * Free the lock if possible. This is only required to be called from the first instance.
 	 * 
-	 * @deprecated Use <code>freeLock()</code> instead.
+	 * @deprecated Use <code>releaseLock()</code> instead.
 	 * @throws Unique4jException throws Unique4jException if it is unable to stop the server or release file lock
 	 */
 	@Deprecated
 	public void free() throws Unique4jException {
-		freeLock();
+		releaseLock();
 	}
 	
 	/**
@@ -501,10 +501,24 @@ public abstract class Unique4j {
 	 * 
 	 * @since 1.2
 	 * 
+	 * @deprecated Use <code>releaseLock()</code> instead.
 	 * @return true if able to release lock, false otherwise
 	 * @throws Unique4jException throws Unique4jException if it is unable to stop the server or release file lock
 	 */
+	@Deprecated
 	public boolean freeLock() throws Unique4jException {
+		return releaseLock();
+	}
+	
+	/**
+	 * Release the lock if possible. This is only required to be called from the first instance.
+	 * 
+	 * @since 1.5
+	 * 
+	 * @return true if able to release lock, false otherwise
+	 * @throws Unique4jException throws Unique4jException if it is unable to stop the server or release file lock
+	 */
+	public boolean releaseLock() throws Unique4jException {
 		try {
 			// close server socket
 			if (server != null) {

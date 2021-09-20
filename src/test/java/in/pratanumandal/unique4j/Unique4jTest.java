@@ -67,7 +67,7 @@ public class Unique4jTest {
 		unique.acquireLock();
 		
 		// try to free the lock before exiting program
-		unique.freeLock();
+		unique.releaseLock();
 		
 	}
 	
@@ -133,9 +133,9 @@ public class Unique4jTest {
 		Assert.assertEquals(message, received.get(0));
 		
 		// try to free the locks before exiting program
-		unique1.freeLock();
+		unique1.releaseLock();
 		
-		unique2.freeLock();
+		unique2.releaseLock();
 		
 	}
 	
@@ -201,9 +201,9 @@ public class Unique4jTest {
 		Assert.assertEquals(message, received.get(0));
 		
 		// try to free the locks before exiting program
-		unique1.freeLock();
+		unique1.releaseLock();
 		
-		unique2.freeLock();
+		unique2.releaseLock();
 		
 	}
 	
@@ -267,9 +267,9 @@ public class Unique4jTest {
 		Assert.assertNull(received.get(0));
 		
 		// try to free the locks before exiting program
-		unique1.freeLock();
+		unique1.releaseLock();
 		
-		unique2.freeLock();
+		unique2.releaseLock();
 		
 	}
 	
@@ -334,9 +334,9 @@ public class Unique4jTest {
 		Assert.assertEquals("null", received.get(0));
 		
 		// try to free the locks before exiting program
-		unique1.freeLock();
+		unique1.releaseLock();
 		
-		unique2.freeLock();
+		unique2.releaseLock();
 		
 	}
 	
@@ -402,9 +402,9 @@ public class Unique4jTest {
 		Assert.assertEquals(message, received.get(0));
 		
 		// try to free the locks before exiting program
-		unique1.freeLock();
+		unique1.releaseLock();
 		
-		unique2.freeLock();
+		unique2.releaseLock();
 		
 	}
 	
@@ -470,9 +470,9 @@ public class Unique4jTest {
 		Assert.assertEquals(message, received.get(0));
 		
 		// try to free the locks before exiting program
-		unique1.freeLock();
+		unique1.releaseLock();
 		
-		unique2.freeLock();
+		unique2.releaseLock();
 		
 	}
 	
@@ -542,9 +542,9 @@ public class Unique4jTest {
 		Assert.assertEquals(messageList, received);
 		
 		// try to free the locks before exiting program
-		unique1.freeLock();
+		unique1.releaseLock();
 		
-		unique2.freeLock();
+		unique2.releaseLock();
 		
 	}
 	
@@ -614,9 +614,9 @@ public class Unique4jTest {
 		Assert.assertEquals(messageList, received);
 		
 		// try to free the locks before exiting program
-		unique1.freeLock();
+		unique1.releaseLock();
 		
-		unique2.freeLock();
+		unique2.releaseLock();
 		
 	}
 	
@@ -680,9 +680,9 @@ public class Unique4jTest {
 		Assert.assertNull(received.get(0));
 		
 		// try to free the locks before exiting program
-		unique1.freeLock();
+		unique1.releaseLock();
 		
-		unique2.freeLock();
+		unique2.releaseLock();
 		
 	}
 	
@@ -752,9 +752,9 @@ public class Unique4jTest {
 		Assert.assertEquals(messageMap, received);
 		
 		// try to free the locks before exiting program
-		unique1.freeLock();
+		unique1.releaseLock();
 		
-		unique2.freeLock();
+		unique2.releaseLock();
 		
 	}
 	
@@ -824,9 +824,9 @@ public class Unique4jTest {
 		Assert.assertEquals(messageMap, received);
 		
 		// try to free the locks before exiting program
-		unique1.freeLock();
+		unique1.releaseLock();
 		
-		unique2.freeLock();
+		unique2.releaseLock();
 		
 	}
 	
@@ -890,9 +890,9 @@ public class Unique4jTest {
 		Assert.assertNull(received.get(0));
 		
 		// try to free the locks before exiting program
-		unique1.freeLock();
+		unique1.releaseLock();
 		
-		unique2.freeLock();
+		unique2.releaseLock();
 		
 	}
 	
@@ -929,7 +929,7 @@ public class Unique4jTest {
 		unique.acquireLock();
 
 		// try to free the lock before exiting program
-		unique.freeLock();
+		unique.releaseLock();
 		
 	}
 	
@@ -995,9 +995,9 @@ public class Unique4jTest {
 		Assert.assertEquals(message, received.get(0));
 		
 		// try to free the locks before exiting program
-		unique1.freeLock();
+		unique1.releaseLock();
 		
-		unique2.freeLock();
+		unique2.releaseLock();
 		
 	}
 	
@@ -1063,9 +1063,9 @@ public class Unique4jTest {
 		Assert.assertEquals(message, received.get(0));
 		
 		// try to free the locks before exiting program
-		unique1.freeLock();
+		unique1.releaseLock();
 		
-		unique2.freeLock();
+		unique2.releaseLock();
 		
 	}
 	

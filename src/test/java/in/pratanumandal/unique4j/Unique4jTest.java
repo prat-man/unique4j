@@ -1071,6 +1071,7 @@ public class Unique4jTest {
 	
 	@Test
 	public void testSubsequentAcquireLock() throws Unique4jException {
+		
 		// first instance
 		initializeUnique4j();
 		
@@ -1079,6 +1080,7 @@ public class Unique4jTest {
 		
 		// release lock for last instance only
 		unique.releaseLock();
+		
 	}
 	
 	private Unique4j initializeUnique4j() throws Unique4jException {
@@ -1118,6 +1120,7 @@ public class Unique4jTest {
 		Assert.assertEquals(true, lockAcquired);
 		
 		return unique;
+		
 	}
 	
 }

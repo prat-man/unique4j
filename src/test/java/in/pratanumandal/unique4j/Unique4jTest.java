@@ -1069,4 +1069,55 @@ public class Unique4jTest {
 		
 	}
 	
+	@Test
+	public void testSubsequentAcquireLock() throws Unique4jException {
+		// first instance
+		initializeUnique4j();
+		
+		// second instance
+		Unique4j unique = initializeUnique4j();
+		
+		// release lock for last instance only
+		unique.releaseLock();
+	}
+	
+	private Unique4j initializeUnique4j() throws Unique4jException {
+		
+		Unique4j unique = new Unique4jList(APP_ID, false) {
+			@Override
+			protected List<String> sendMessageList() {
+				// send messages
+				return null;
+			}
+
+			@Override
+			protected void receiveMessageList(List<String> message) {
+				try {
+					// release lock on first instance
+					boolean lockReleased = this.releaseLock();
+					
+					// assert if lock has been released
+					Assert.assertEquals(true, lockReleased);
+				} catch (Unique4jException e) {
+					e.printStackTrace();
+				}
+			}
+		};
+		
+		// try to acquire lock
+		boolean lockAcquired = unique.acquireLock();
+		
+		// failed to acquire lock, first instance had lock
+		// therefore, now first instance has released lock
+		// try to acquire lock again
+		if (!lockAcquired) {
+			lockAcquired = unique.acquireLock();
+		}
+
+		// assert if lock has been acquired
+		Assert.assertEquals(true, lockAcquired);
+		
+		return unique;
+	}
+	
 }

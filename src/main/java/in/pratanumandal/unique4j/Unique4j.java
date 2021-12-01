@@ -22,7 +22,6 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
-import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 import java.nio.channels.OverlappingFileLockException;
@@ -232,10 +231,9 @@ public abstract class Unique4j {
 
 	// start the server
 	private void startServer() throws Unique4jException {
-		// try to start the server and write whatever is needed to the lock file
+		// try to start the server
 		try {
-			// Do NOT close the stream as it will also close the underlying channel, which is holding the lock
-			server = IPC_FACTORY.getServerSocket(Channels.newOutputStream(fileLock.channel()));
+			server = IPC_FACTORY.getServerSocket(new File(TEMP_DIR), APP_ID);
 		} catch (IOException e) {
 			throw new Unique4jException(e);
 		}
@@ -319,24 +317,14 @@ public abstract class Unique4j {
 
 	// do client tasks
 	private void doClient() throws Unique4jException {
-		// try to establish connection to server by reading anything we need off of the file
+		// try to establish connection to server
 		final Socket socket;
-		InputStream fileLockIs = null;
 		try {
-			fileLockIs = new FileInputStream(getLockFile());
-			socket = IPC_FACTORY.getClientSocket(fileLockIs);
+			socket = IPC_FACTORY.getClientSocket(new File(TEMP_DIR), APP_ID);
 		} catch (IOException e) {
 			// connection failed try to start server
 			startServer();
 			return;
-		} catch (RuntimeException e) {
-			throw new Unique4jException(e);
-		} finally {
-			try {
-				if (fileLockIs != null) fileLockIs.close();
-			} catch (IOException ex) {
-				// We don't want to swallow an exception if thrown from the catch block
-			}
 		}
 
 		// connection successful try to connect to server
@@ -424,7 +412,7 @@ public abstract class Unique4j {
 		try {
 			lockRAF = new RandomAccessFile(getLockFile(), "rws");
 			FileChannel fc = lockRAF.getChannel();
-			fileLock = fc.tryLock(0, Long.MAX_VALUE, true);
+			fileLock = fc.tryLock();
 			return fileLock != null;
 		} catch (IOException e) {
 			return false;

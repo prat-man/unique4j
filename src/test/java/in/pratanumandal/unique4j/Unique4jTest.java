@@ -22,8 +22,17 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.newsclub.net.unix.AFUNIXServerSocket;
+import org.newsclub.net.unix.AFUNIXSocket;
+import org.newsclub.net.unix.AFUNIXSocketAddress;
 
-import java.net.InetAddress;
+import java.io.File;
+import java.io.IOException;
+import java.net.*;
+import java.nio.channels.ServerSocketChannel;
+import java.nio.channels.SocketChannel;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -43,7 +52,77 @@ public class Unique4jTest {
 	@Parameterized.Parameters
 	public static Collection<Object[]> data() {
 		return Arrays.asList(new Object[][] {
-				{ new FactoryImpl(new DynamicPortSocketIpcFactory(InetAddress.getLoopbackAddress(), 3000)) }
+				{ new FactoryImpl(new DynamicPortSocketIpcFactory(InetAddress.getLoopbackAddress(), 3000)) },
+				{ new FactoryImpl(new SocketIpcFactory() {
+					@Override
+					public IpcServer createIpcServer(File parentDirectory, String appId) throws IOException {
+						return new SocketIpcServer(createServerSocket(parentDirectory, appId)) {
+							@Override
+							public void close() throws IOException {
+								final File file = isClosed() ?
+										null :
+										((AFUNIXSocketAddress) socket.getLocalSocketAddress()).getFile();
+								super.close();
+
+								if(file != null)
+									Files.deleteIfExists(file.toPath());
+							}
+						};
+					}
+
+					@Override
+					protected ServerSocket createServerSocket(File parentDirectory, String appId) throws IOException {
+						File socketFile = new File(parentDirectory, appId + ".socket");
+						AFUNIXServerSocket socket = AFUNIXServerSocket.newInstance();
+						socket.bind(AFUNIXSocketAddress.of(socketFile));
+						return socket;
+					}
+
+					@Override
+					protected Socket createClientSocket(File parentDirectory, String appId) throws IOException {
+						File socketFile = new File(parentDirectory, appId + ".socket");
+						AFUNIXSocket socket = AFUNIXSocket.newInstance();
+						socket.connect(AFUNIXSocketAddress.of(socketFile));
+						return socket;
+					}
+				}) },
+				{ new FactoryImpl(new SocketChannelIpcFactory() {
+					@Override
+					public IpcServer createIpcServer(File parentDirectory, String appId) throws IOException {
+						return new SocketChannelIpcServer(createServerSocket(parentDirectory, appId)) {
+							@Override
+							public void close() throws IOException {
+								final Path file = isClosed() ?
+										null :
+										((UnixDomainSocketAddress) channel.getLocalAddress()).getPath();
+								super.close();
+
+								if(file != null)
+									Files.deleteIfExists(file);
+							}
+						};
+					}
+
+					@Override
+					protected ServerSocketChannel createServerSocket(File parentDirectory, String appId) throws IOException {
+						Path socketPath = parentDirectory.toPath().resolve(appId + ".socket");
+						Files.deleteIfExists(socketPath);
+
+						UnixDomainSocketAddress socketAddress = UnixDomainSocketAddress.of(socketPath);
+						ServerSocketChannel serverChannel = ServerSocketChannel.open(StandardProtocolFamily.UNIX);
+						serverChannel.bind(socketAddress);
+						return serverChannel;
+					}
+
+					@Override
+					protected SocketChannel createClientSocket(File parentDirectory, String appId) throws IOException {
+						Path socketPath = parentDirectory.toPath().resolve(appId + ".socket");
+						UnixDomainSocketAddress socketAddress = UnixDomainSocketAddress.of(socketPath);
+						SocketChannel channel = SocketChannel.open(StandardProtocolFamily.UNIX);
+						channel.connect(socketAddress);
+						return channel;
+					}
+				}) }
 		});
 	}
 

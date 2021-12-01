@@ -25,18 +25,8 @@ public class DynamicPortSocketIpcFactory extends SocketIpcFactory implements Por
     }
 
     @Override
-    public ServerSocket createServerSocket(File parentDirectory, String appId) throws IOException {
-        // use dynamic port policy
-        ServerSocket socket;
-        actualPort = port;
-        while (true) {
-            try {
-                socket = new ServerSocket(actualPort, 0, address);
-                break;
-            } catch (IOException e) {
-                actualPort++;
-            }
-        }
+    public IpcServer createIpcServer(File parentDirectory, String appId) throws IOException {
+        final ServerSocket socket = createServerSocket(parentDirectory, appId);
 
         BufferedWriter bw = null;
         try {
@@ -44,7 +34,14 @@ public class DynamicPortSocketIpcFactory extends SocketIpcFactory implements Por
             bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(portFile), charset));
             bw.write(String.valueOf(actualPort));
             bw.close();
-            return socket;
+            return new SocketIpcServer(socket) {
+                @Override
+                public void close() throws IOException {
+                    super.close();
+                    if(!portFile.delete())
+                        throw new IOException("Failed to delete port file " + portFile);
+                }
+            };
         } catch (IOException ex) {
 
             try {
@@ -65,6 +62,19 @@ public class DynamicPortSocketIpcFactory extends SocketIpcFactory implements Por
     }
 
     @Override
+    public ServerSocket createServerSocket(File parentDirectory, String appId) {
+        // use dynamic port policy
+        actualPort = port;
+        while (true) {
+            try {
+                return new ServerSocket(actualPort, 0, address);
+            } catch (IOException e) {
+                actualPort++;
+            }
+        }
+    }
+
+    @Override
     public Socket createClientSocket(File parentDirectory, String appId) throws IOException {
         BufferedReader br = null;
         try {
@@ -77,6 +87,7 @@ public class DynamicPortSocketIpcFactory extends SocketIpcFactory implements Por
                 throw new IOException("Corrupted port file " + portFile, ex);
             }
 
+            br.close();
             return new Socket(address, actualPort);
         } catch (IOException ex) {
             try {

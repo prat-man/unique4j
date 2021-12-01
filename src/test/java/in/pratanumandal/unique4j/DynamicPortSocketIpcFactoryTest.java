@@ -10,18 +10,16 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
+
+import static in.pratanumandal.unique4j.Unique4jTest.getAppId;
 
 public class DynamicPortSocketIpcFactoryTest {
 
     private static final String TEMP_DIR = System.getProperty("java.io.tmpdir");
 
-    public static final String BASE_APP_ID = Unique4jTest.BASE_APP_ID;
-    public static final AtomicInteger APP_ID_COUNT = Unique4jTest.APP_ID_COUNT;
-
     @Test
     public void testCustomPortDynamic() throws Unique4jException {
-        final String APP_ID = BASE_APP_ID + "-" + APP_ID_COUNT.getAndIncrement();
+        final String APP_ID = getAppId();
 
         final Object lock = new Object();
 
@@ -90,7 +88,7 @@ public class DynamicPortSocketIpcFactoryTest {
 
     @Test
     public void testCorruptedLockFile() throws Unique4jException, IOException {
-        final String APP_ID = BASE_APP_ID + "-" + APP_ID_COUNT.getAndIncrement();
+        final String APP_ID = getAppId();
 
         String filePath = TEMP_DIR + File.separator + APP_ID + ".lock";
 

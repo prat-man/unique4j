@@ -6,16 +6,14 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
+
+import static in.pratanumandal.unique4j.Unique4jTest.getAppId;
 
 public class StaticPortSocketIpcFactoryTest {
 
-    public static final String BASE_APP_ID = Unique4jTest.BASE_APP_ID;
-    public static final AtomicInteger APP_ID_COUNT = Unique4jTest.APP_ID_COUNT;
-
     @Test
     public void testCustomPortStatic() throws Unique4jException {
-        final String APP_ID = BASE_APP_ID + "-" + APP_ID_COUNT.getAndIncrement();
+        final String APP_ID = getAppId();
 
         final Object lock = new Object();
 

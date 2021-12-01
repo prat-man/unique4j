@@ -15,8 +15,8 @@
     <description>Java library to allow only single instance of a java application to run and enable communication between first instance and subsequent instances</description>
 
     <properties>
-        <maven.compiler.target>1.6</maven.compiler.target>
-        <maven.compiler.source>1.6</maven.compiler.source>
+        <maven.compiler.target>1.7</maven.compiler.target>
+        <maven.compiler.source>1.7</maven.compiler.source>
     </properties>
 
     <dependencies>

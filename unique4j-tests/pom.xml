@@ -26,6 +26,18 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>in.pratanumandal</groupId>
+            <artifactId>unique4j-unix-socket-channel</artifactId>
+            <version>1.5</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>in.pratanumandal</groupId>
+            <artifactId>unique4j-junixsocket</artifactId>
+            <version>1.5</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.13.1</version>
@@ -35,19 +47,6 @@
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>2.7</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.kohlschutter.junixsocket</groupId>
-            <artifactId>junixsocket-core</artifactId>
-            <version>2.4.0</version>
-            <type>pom</type>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.kohlschutter.junixsocket</groupId>
-            <artifactId>junixsocket-server</artifactId>
-            <version>2.4.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

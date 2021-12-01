@@ -39,9 +39,11 @@
 	</properties>
 
 	<modules>
-		<module>unique4j-tests</module>
-		<!-- Last module should be one we want to deploy, as per documentation -->
 		<module>unique4j</module>
+		<module>unique4j-tests</module>
+		<module>unique4j-junixsocket</module>
+		<!-- Last module should be one we want to deploy, as per documentation -->
+		<module>unique4j-unix-socket-channel</module>
 	</modules>
 
 	<build>

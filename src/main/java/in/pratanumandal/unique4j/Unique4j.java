@@ -269,6 +269,9 @@ public abstract class Unique4j {
 										message = new String(messageBytes, 0, bytesRead, "UTF-8");
 									}
 
+									// perform user action on message
+									receiveMessage(message);
+
 									// write response to client
 									if (APP_ID == null) {
 										dos.writeInt(-1);
@@ -284,9 +287,6 @@ public abstract class Unique4j {
 									// close writer and reader
 									dos.close();
 									dis.close();
-
-									// perform user action on message
-									receiveMessage(message);
 
 									// close socket
 									client.close();

@@ -23,41 +23,86 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
+import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Consumer;
 
+@RunWith(Parameterized.class)
 public class Unique4jTest {
 	
 	public static final String BASE_APP_ID = "in.pratanumandal.unique4j-mlsdvo-20191511-#j.6";
 	public static final AtomicInteger APP_ID_COUNT = new AtomicInteger();
 
+	@Parameterized.Parameters
+	public static Collection<Object[]> data() {
+		return Arrays.asList(new Object[][] {
+				{ new FactoryImpl(new DynamicPortSocketIpcFactory(InetAddress.getLoopbackAddress(), 3000)) }
+		});
+	}
+
+	interface Factory {
+
+		ComposableUnique4j create(String APP_ID,
+								  ComposableUnique4j.MessageHandler MESSAGE_HANDLER,
+								  Consumer<Throwable> EXCEPTION_HANDLER,
+								  Runnable EXIT_HANDLER);
+
+		ComposableUnique4j create(String APP_ID, ComposableUnique4j.MessageHandler MESSAGE_HANDLER);
+	}
+
+	static class FactoryImpl implements Factory {
+
+		private final IpcFactory IPC_FACTORY;
+
+		public FactoryImpl(IpcFactory IPC_FACTORY) {
+			this.IPC_FACTORY = IPC_FACTORY;
+		}
+
+		@Override
+		public ComposableUnique4j create(String APP_ID,
+										 ComposableUnique4j.MessageHandler MESSAGE_HANDLER,
+										 Consumer<Throwable> EXCEPTION_HANDLER,
+										 Runnable EXIT_HANDLER) {
+			return new ComposableUnique4j(APP_ID, IPC_FACTORY, MESSAGE_HANDLER, EXCEPTION_HANDLER, EXIT_HANDLER);
+		}
+
+		@Override
+		public ComposableUnique4j create(String APP_ID, ComposableUnique4j.MessageHandler MESSAGE_HANDLER) {
+			return new ComposableUnique4j(APP_ID, IPC_FACTORY, MESSAGE_HANDLER, null, null);
+		}
+	}
+
+	private final Factory factory;
+
+	public Unique4jTest(Factory factory) {
+		this.factory = factory;
+	}
+
 	@Test
 	public void testUnique4jBasic() throws Unique4jException {
 		final String APP_ID = BASE_APP_ID + "-" + APP_ID_COUNT.getAndIncrement();
 
-		Unique4j unique = new Unique4j(APP_ID) {
-			@Override
-			protected String sendMessage() {
-				// send null
-				return null;
-			}
-			
-			@Override
-			protected void receiveMessage(String arg0) {
-				// do nothing
-			}
-			
-			@Override
-			protected void handleException(Exception exception) {
-				// do nothing
-			}
-			
-			@Override
-			protected void beforeExit() {
-				// do nothing
-			}
-		};
+		Unique4j unique = factory.create(
+				APP_ID,
+				new ComposableUnique4j.MessageHandler() {
+					@Override
+					public String sendMessage() {
+						// send null
+						return null;
+					}
+
+					@Override
+					public void receiveMessage(String arg0) {
+						// do nothing
+					}
+				},
+				t -> {},
+				() -> {});
 
 		try {
 			// try to obtain lock
@@ -78,37 +123,37 @@ public class Unique4jTest {
 		
 		final String message = "ijvnfpp389528$#$@520sdf.213sgv8";
 
-		Unique4j unique1 = new Unique4j(APP_ID, false) {
+		Unique4j unique1 = factory.create(APP_ID, new ComposableUnique4j.MessageHandler() {
 			@Override
-			protected String sendMessage() {
+			public String sendMessage() {
 				// send null
 				return null;
 			}
-			
+
 			@Override
-			protected void receiveMessage(String arg0) {
+			public void receiveMessage(String arg0) {
 				// to assert on main thread
 				received.add(arg0);
-				
+
 				// notify that message has been received
 				synchronized (lock) {
 					lock.notify();
 				}
 			}
-		};
+		});
 		
-		Unique4j unique2 = new Unique4j(APP_ID, false) {
+		Unique4j unique2 = factory.create(APP_ID, new ComposableUnique4j.MessageHandler() {
 			@Override
-			protected String sendMessage() {
+			public String sendMessage() {
 				// send message
 				return message;
 			}
 			
 			@Override
-			protected void receiveMessage(String arg0) {
+			public void receiveMessage(String arg0) {
 				// do nothing
 			}
-		};
+		});
 
 		try {
 			// try to obtain lock
@@ -147,15 +192,15 @@ public class Unique4jTest {
 		
 		final String message = new String();
 		
-		Unique4j unique1 = new Unique4j(APP_ID, false) {
+		Unique4j unique1 = factory.create(APP_ID, new ComposableUnique4j.MessageHandler() {
 			@Override
-			protected String sendMessage() {
+			public String sendMessage() {
 				// send null
 				return null;
 			}
 			
 			@Override
-			protected void receiveMessage(String arg0) {
+			public void receiveMessage(String arg0) {
 				// to assert on main thread
 				received.add(arg0);
 				
@@ -164,20 +209,20 @@ public class Unique4jTest {
 					lock.notify();
 				}
 			}
-		};
+		});
 		
-		Unique4j unique2 = new Unique4j(APP_ID, false) {
+		Unique4j unique2 = factory.create(APP_ID, new ComposableUnique4j.MessageHandler() {
 			@Override
-			protected String sendMessage() {
+			public String sendMessage() {
 				// send message
 				return message;
 			}
 			
 			@Override
-			protected void receiveMessage(String arg0) {
+			public void receiveMessage(String arg0) {
 				// do nothing
 			}
-		};
+		});
 
 		try {
 			// try to obtain lock
@@ -214,15 +259,15 @@ public class Unique4jTest {
 		
 		final List<Object> received = new ArrayList<Object>();
 		
-		Unique4j unique1 = new Unique4j(APP_ID, false) {
+		Unique4j unique1 = factory.create(APP_ID, new ComposableUnique4j.MessageHandler() {
 			@Override
-			protected String sendMessage() {
+			public String sendMessage() {
 				// send null
 				return null;
 			}
 			
 			@Override
-			protected void receiveMessage(String arg0) {
+			public void receiveMessage(String arg0) {
 				// to assert on main thread
 				received.add(arg0);
 				
@@ -231,20 +276,20 @@ public class Unique4jTest {
 					lock.notify();
 				}
 			}
-		};
+		});
 		
-		Unique4j unique2 = new Unique4j(APP_ID, false) {
+		Unique4j unique2 = factory.create(APP_ID, new ComposableUnique4j.MessageHandler() {
 			@Override
-			protected String sendMessage() {
+			public String sendMessage() {
 				// send null
 				return null;
 			}
 			
 			@Override
-			protected void receiveMessage(String arg0) {
+			public void receiveMessage(String arg0) {
 				// do nothing
 			}
-		};
+		});
 
 		try {
 			// try to obtain lock
@@ -281,15 +326,15 @@ public class Unique4jTest {
 		
 		final List<Object> received = new ArrayList<Object>();
 		
-		Unique4j unique1 = new Unique4j(APP_ID, false) {
+		Unique4j unique1 = factory.create(APP_ID, new ComposableUnique4j.MessageHandler() {
 			@Override
-			protected String sendMessage() {
+			public String sendMessage() {
 				// send null
 				return null;
 			}
 			
 			@Override
-			protected void receiveMessage(String arg0) {
+			public void receiveMessage(String arg0) {
 				// to assert on main thread
 				received.add(arg0);
 				
@@ -298,20 +343,20 @@ public class Unique4jTest {
 					lock.notify();
 				}
 			}
-		};
+		});
 		
-		Unique4j unique2 = new Unique4j(APP_ID, false) {
+		Unique4j unique2 = factory.create(APP_ID, new ComposableUnique4j.MessageHandler() {
 			@Override
-			protected String sendMessage() {
+			public String sendMessage() {
 				// send null as a string
 				return "null";
 			}
 			
 			@Override
-			protected void receiveMessage(String arg0) {
+			public void receiveMessage(String arg0) {
 				// do nothing
 			}
-		};
+		});
 
 		try {
 			// try to obtain lock
@@ -351,15 +396,15 @@ public class Unique4jTest {
 		
 		final String message = "hello\nworld";
 		
-		Unique4j unique1 = new Unique4j(APP_ID, false) {
+		Unique4j unique1 = factory.create(APP_ID, new ComposableUnique4j.MessageHandler() {
 			@Override
-			protected String sendMessage() {
+			public String sendMessage() {
 				// send null
 				return null;
 			}
 			
 			@Override
-			protected void receiveMessage(String arg0) {
+			public void receiveMessage(String arg0) {
 				// to assert on main thread
 				received.add(arg0);
 				
@@ -368,20 +413,20 @@ public class Unique4jTest {
 					lock.notify();
 				}
 			}
-		};
+		});
 		
-		Unique4j unique2 = new Unique4j(APP_ID, false) {
+		Unique4j unique2 = factory.create(APP_ID, new ComposableUnique4j.MessageHandler() {
 			@Override
-			protected String sendMessage() {
+			public String sendMessage() {
 				// send message
 				return message;
 			}
 			
 			@Override
-			protected void receiveMessage(String arg0) {
+			public void receiveMessage(String arg0) {
 				// do nothing
 			}
-		};
+		});
 
 		try {
 			// try to obtain lock
@@ -420,15 +465,15 @@ public class Unique4jTest {
 		
 		final String message = "hello\r\nworld";
 		
-		Unique4j unique1 = new Unique4j(APP_ID, false) {
+		Unique4j unique1 = factory.create(APP_ID, new ComposableUnique4j.MessageHandler() {
 			@Override
-			protected String sendMessage() {
+			public String sendMessage() {
 				// send null
 				return null;
 			}
 			
 			@Override
-			protected void receiveMessage(String arg0) {
+			public void receiveMessage(String arg0) {
 				// to assert on main thread
 				received.add(arg0);
 				
@@ -437,20 +482,20 @@ public class Unique4jTest {
 					lock.notify();
 				}
 			}
-		};
+		});
 		
-		Unique4j unique2 = new Unique4j(APP_ID, false) {
+		Unique4j unique2 = factory.create(APP_ID, new ComposableUnique4j.MessageHandler() {
 			@Override
-			protected String sendMessage() {
+			public String sendMessage() {
 				// send message
 				return message;
 			}
 			
 			@Override
-			protected void receiveMessage(String arg0) {
+			public void receiveMessage(String arg0) {
 				// do nothing
 			}
-		};
+		});
 
 		try {
 			// try to obtain lock
@@ -506,19 +551,20 @@ public class Unique4jTest {
 	}
 	
 	private Unique4j initializeUnique4j(String APP_ID) throws Unique4jException {
-		
-		Unique4j unique = new Unique4jList(APP_ID, false) {
+
+		final AtomicReference<Unique4j> uniqueRef = new AtomicReference<>();
+		uniqueRef.set(factory.create(APP_ID, new ComposableUnique4j.MessageHandler() {
 			@Override
-			protected List<String> sendMessageList() {
+			public String sendMessage() {
 				// send messages
 				return null;
 			}
 
 			@Override
-			protected void receiveMessageList(List<String> message) {
+			public void receiveMessage(String message) {
 				try {
 					// release lock on first instance
-					boolean lockReleased = this.releaseLock();
+					boolean lockReleased = uniqueRef.get().releaseLock();
 					
 					// assert if lock has been released
 					Assert.assertEquals(true, lockReleased);
@@ -526,7 +572,8 @@ public class Unique4jTest {
 					e.printStackTrace();
 				}
 			}
-		};
+		}));
+		Unique4j unique = uniqueRef.get();
 		
 		// try to acquire lock
 		boolean lockAcquired = unique.acquireLock();

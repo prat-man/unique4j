@@ -87,10 +87,10 @@ public class DynamicPortSocketIpcFactoryTest {
     }
 
     @Test
-    public void testCorruptedLockFile() throws Unique4jException, IOException {
+    public void testCorruptedPortFile() throws Unique4jException, IOException {
         final String APP_ID = getAppId();
 
-        String filePath = TEMP_DIR + File.separator + APP_ID + ".lock";
+        String filePath = TEMP_DIR + File.separator + APP_ID + ".port";
 
         File file = new File(filePath);
 

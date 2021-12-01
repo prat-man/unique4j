@@ -6,7 +6,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.charset.Charset;
 
-public class DynamicPortSocketIpcFactory implements SocketIpcFactory, PortIpcFactory {
+public class DynamicPortSocketIpcFactory extends SocketIpcFactory implements PortIpcFactory {
 
     private final InetAddress address;
     private final int port;
@@ -25,7 +25,7 @@ public class DynamicPortSocketIpcFactory implements SocketIpcFactory, PortIpcFac
     }
 
     @Override
-    public ServerSocket getServerSocket(File parentDirectory, String appId) throws IOException {
+    public ServerSocket createServerSocket(File parentDirectory, String appId) throws IOException {
         // use dynamic port policy
         ServerSocket socket;
         actualPort = port;
@@ -65,7 +65,7 @@ public class DynamicPortSocketIpcFactory implements SocketIpcFactory, PortIpcFac
     }
 
     @Override
-    public Socket getClientSocket(File parentDirectory, String appId) throws IOException {
+    public Socket createClientSocket(File parentDirectory, String appId) throws IOException {
         BufferedReader br = null;
         try {
             final File portFile = new File(parentDirectory, appId + ".port");

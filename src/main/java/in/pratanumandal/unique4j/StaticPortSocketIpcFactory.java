@@ -6,7 +6,7 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-public class StaticPortSocketIpcFactory implements SocketIpcFactory, PortIpcFactory {
+public class StaticPortSocketIpcFactory extends SocketIpcFactory implements PortIpcFactory {
 
     private final InetAddress address;
     private final int port;
@@ -17,12 +17,12 @@ public class StaticPortSocketIpcFactory implements SocketIpcFactory, PortIpcFact
     }
 
     @Override
-    public ServerSocket getServerSocket(File parentDirectory, String appId) throws IOException {
+    public ServerSocket createServerSocket(File parentDirectory, String appId) throws IOException {
         return new ServerSocket(port, 0, address);
     }
 
     @Override
-    public Socket getClientSocket(File parentDirectory, String appId) throws IOException {
+    public Socket createClientSocket(File parentDirectory, String appId) throws IOException {
         return new Socket(address, port);
     }
 

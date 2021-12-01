@@ -19,9 +19,6 @@ package in.pratanumandal.unique4j;
 
 import java.io.*;
 import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.SocketException;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 import java.nio.channels.OverlappingFileLockException;
@@ -93,10 +90,10 @@ public abstract class Unique4j {
 	// auto exit from application or not
 	private final boolean AUTO_EXIT;
 
-	private final SocketIpcFactory IPC_FACTORY;
+	private final IpcFactory IPC_FACTORY;
 
 	// lock server socket
-	private ServerSocket server;
+	private IpcServer server;
 
 	// lock file RAF object
 	private RandomAccessFile lockRAF;
@@ -188,7 +185,7 @@ public abstract class Unique4j {
 	 * @param AUTO_EXIT If true, automatically exit the application for subsequent instances
 	 * @param IPC_FACTORY
 	 */
-	public Unique4j(final String APP_ID, final boolean AUTO_EXIT, final SocketIpcFactory IPC_FACTORY) {
+	public Unique4j(final String APP_ID, final boolean AUTO_EXIT, final IpcFactory IPC_FACTORY) {
 		this.APP_ID = APP_ID;
 		this.AUTO_EXIT = AUTO_EXIT;
 		this.IPC_FACTORY = IPC_FACTORY;
@@ -233,7 +230,7 @@ public abstract class Unique4j {
 	private void startServer() throws Unique4jException {
 		// try to start the server
 		try {
-			server = IPC_FACTORY.getServerSocket(new File(TEMP_DIR), APP_ID);
+			server = IPC_FACTORY.createIpcServer(new File(TEMP_DIR), APP_ID);
 		} catch (IOException e) {
 			throw new Unique4jException(e);
 		}
@@ -246,7 +243,7 @@ public abstract class Unique4j {
 				while (!server.isClosed()) {
 					try {
 						// establish connection
-						final Socket socket = server.accept();
+						final IpcClient client = server.accept();
 
 						// handle socket on a different thread to allow parallel connections
 						Thread thread = new Thread() {
@@ -254,11 +251,11 @@ public abstract class Unique4j {
 							public void run() {
 								try {
 									// open writer
-									OutputStream os = socket.getOutputStream();
+									OutputStream os = client.getOutputStream();
 									DataOutputStream dos = new DataOutputStream(os);
 
 									// open reader
-									InputStream is = socket.getInputStream();
+									InputStream is = client.getInputStream();
 									DataInputStream dis = new DataInputStream(is);
 
 									// read message length from client
@@ -292,7 +289,7 @@ public abstract class Unique4j {
 									receiveMessage(message);
 
 									// close socket
-									socket.close();
+									client.close();
 								} catch (IOException e) {
 									handleException(new Unique4jException(e));
 								}
@@ -301,12 +298,10 @@ public abstract class Unique4j {
 
 						// start socket thread
 						thread.start();
-					} catch (SocketException e) {
+					} catch (IOException e) {
 						if (!server.isClosed()) {
 							handleException(new Unique4jException(e));
 						}
-					} catch (IOException e) {
-						handleException(new Unique4jException(e));
 					}
 				}
 			}
@@ -318,9 +313,9 @@ public abstract class Unique4j {
 	// do client tasks
 	private void doClient() throws Unique4jException {
 		// try to establish connection to server
-		final Socket socket;
+		final IpcClient client;
 		try {
-			socket = IPC_FACTORY.getClientSocket(new File(TEMP_DIR), APP_ID);
+			client = IPC_FACTORY.createIpcClient(new File(TEMP_DIR), APP_ID);
 		} catch (IOException e) {
 			// connection failed try to start server
 			startServer();
@@ -333,11 +328,11 @@ public abstract class Unique4j {
 			String message = sendMessage();
 
 			// open writer
-			OutputStream os = socket.getOutputStream();
+			OutputStream os = client.getOutputStream();
 			DataOutputStream dos = new DataOutputStream(os);
 
 			// open reader
-			InputStream is = socket.getInputStream();
+			InputStream is = client.getInputStream();
 			DataInputStream dis = new DataInputStream(is);
 
 			// write message to server
@@ -381,7 +376,7 @@ public abstract class Unique4j {
 				// validation failed, this is the first instance
 				try {
 					// close socket
-					socket.close();
+					client.close();
 				} catch (IOException ignored) {
 					// Ignored, validation failed anyway
 				}
@@ -390,11 +385,11 @@ public abstract class Unique4j {
 			}
 
 			// close socket
-			socket.close();
+			client.close();
 		} catch (IOException e) {
 			// close socket
 			try {
-				socket.close();
+				client.close();
 			} catch (IOException ignored) {
 				// We don't want to swallow an exception if thrown from the catch block
 			}

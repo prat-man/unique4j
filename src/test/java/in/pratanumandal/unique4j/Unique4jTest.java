@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Assert;
@@ -35,10 +36,12 @@ public class Unique4jTest {
 	
 	private static final String TEMP_DIR = System.getProperty("java.io.tmpdir");
 	
-	private static final String APP_ID = "in.pratanumandal.unique4j-mlsdvo-20191511-#j.6";
+	private static final String BASE_APP_ID = "in.pratanumandal.unique4j-mlsdvo-20191511-#j.6";
+	private static final AtomicInteger APP_ID_COUNT = new AtomicInteger();
 
 	@Test
 	public void testUnique4jBasic() throws Unique4jException {
+		final String APP_ID = BASE_APP_ID + "-" + APP_ID_COUNT.getAndIncrement();
 
 		Unique4j unique = new Unique4j(APP_ID) {
 			@Override
@@ -74,6 +77,7 @@ public class Unique4jTest {
 	
 	@Test
 	public void testUnique4j() throws Unique4jException {
+		final String APP_ID = BASE_APP_ID + "-" + APP_ID_COUNT.getAndIncrement();
 		
 		final Object lock = new Object();
 		
@@ -142,6 +146,7 @@ public class Unique4jTest {
 	
 	@Test
 	public void testUnique4jEmpty() throws Unique4jException {
+		final String APP_ID = BASE_APP_ID + "-" + APP_ID_COUNT.getAndIncrement();
 
 		final Object lock = new Object();
 		
@@ -210,6 +215,7 @@ public class Unique4jTest {
 	
 	@Test
 	public void testUnique4jNull1() throws Unique4jException {
+		final String APP_ID = BASE_APP_ID + "-" + APP_ID_COUNT.getAndIncrement();
 		
 		final Object lock = new Object();
 		
@@ -276,6 +282,7 @@ public class Unique4jTest {
 	
 	@Test
 	public void testUnique4jNull2() throws Unique4jException {
+		final String APP_ID = BASE_APP_ID + "-" + APP_ID_COUNT.getAndIncrement();
 		
 		final Object lock = new Object();
 		
@@ -343,6 +350,7 @@ public class Unique4jTest {
 	
 	@Test
 	public void testUnique4jNewline1() throws Unique4jException {
+		final String APP_ID = BASE_APP_ID + "-" + APP_ID_COUNT.getAndIncrement();
 		
 		final Object lock = new Object();
 		
@@ -411,6 +419,7 @@ public class Unique4jTest {
 	
 	@Test
 	public void testUnique4jNewline2() throws Unique4jException {
+		final String APP_ID = BASE_APP_ID + "-" + APP_ID_COUNT.getAndIncrement();
 		
 		final Object lock = new Object();
 		
@@ -479,6 +488,7 @@ public class Unique4jTest {
 	
 	@Test
 	public void testUnique4jList() throws Unique4jException {
+		final String APP_ID = BASE_APP_ID + "-" + APP_ID_COUNT.getAndIncrement();
 		
 		final Object lock = new Object();
 		
@@ -551,6 +561,7 @@ public class Unique4jTest {
 	
 	@Test
 	public void testUnique4jListNewline() throws Unique4jException {
+		final String APP_ID = BASE_APP_ID + "-" + APP_ID_COUNT.getAndIncrement();
 		
 		final Object lock = new Object();
 		
@@ -623,6 +634,7 @@ public class Unique4jTest {
 	
 	@Test
 	public void testUnique4jListNull() throws Unique4jException {
+		final String APP_ID = BASE_APP_ID + "-" + APP_ID_COUNT.getAndIncrement();
 		
 		final Object lock = new Object();
 		
@@ -689,6 +701,7 @@ public class Unique4jTest {
 	
 	@Test
 	public void testUnique4jMap() throws Unique4jException {
+		final String APP_ID = BASE_APP_ID + "-" + APP_ID_COUNT.getAndIncrement();
 		
 		final Object lock = new Object();
 		
@@ -761,6 +774,7 @@ public class Unique4jTest {
 	
 	@Test
 	public void testUnique4jMapNewline() throws Unique4jException {
+		final String APP_ID = BASE_APP_ID + "-" + APP_ID_COUNT.getAndIncrement();
 		
 		final Object lock = new Object();
 		
@@ -833,6 +847,7 @@ public class Unique4jTest {
 	
 	@Test
 	public void testUnique4jMapNull() throws Unique4jException {
+		final String APP_ID = BASE_APP_ID + "-" + APP_ID_COUNT.getAndIncrement();
 		
 		final Object lock = new Object();
 		
@@ -899,6 +914,7 @@ public class Unique4jTest {
 	
 	@Test
 	public void testCorruptedLockFile() throws Unique4jException, IOException {
+		final String APP_ID = BASE_APP_ID + "-" + APP_ID_COUNT.getAndIncrement();
 		
 		String filePath = TEMP_DIR + File.separator + APP_ID + ".lock";
 		
@@ -937,6 +953,7 @@ public class Unique4jTest {
 	
 	@Test
 	public void testCustomPortStatic() throws Unique4jException {
+		final String APP_ID = BASE_APP_ID + "-" + APP_ID_COUNT.getAndIncrement();
 		
 		final Object lock = new Object();
 		
@@ -1005,6 +1022,7 @@ public class Unique4jTest {
 	
 	@Test
 	public void testCustomPortDynamic() throws Unique4jException {
+		final String APP_ID = BASE_APP_ID + "-" + APP_ID_COUNT.getAndIncrement();
 		
 		final Object lock = new Object();
 		
@@ -1073,14 +1091,15 @@ public class Unique4jTest {
 	
 	@Test
 	public void testSubsequentAcquireLock() throws Unique4jException {
+		final String APP_ID = BASE_APP_ID + "-" + APP_ID_COUNT.getAndIncrement();
 
 		Unique4j first = null, second = null;
 		try {
 			// first instance
-			first = initializeUnique4j();
+			first = initializeUnique4j(APP_ID);
 
 			// second instance
-			second = initializeUnique4j();
+			second = initializeUnique4j(APP_ID);
 
 			// release lock for last instance only
 			second.releaseLock();
@@ -1096,7 +1115,7 @@ public class Unique4jTest {
 		}
 	}
 	
-	private Unique4j initializeUnique4j() throws Unique4jException {
+	private Unique4j initializeUnique4j(String APP_ID) throws Unique4jException {
 		
 		Unique4j unique = new Unique4jList(APP_ID, false) {
 			@Override

@@ -1,0 +1,41 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>in.pratanumandal</groupId>
+        <artifactId>unique4j-parent</artifactId>
+        <version>1.5</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>unique4j-junixsocket</artifactId>
+    <name>Unique4j junixsocket Implementation</name>
+    <description>Unique4j IPC implementation using the junixsocket library</description>
+
+    <properties>
+        <!-- Minimum version supported by junixsocket -->
+        <maven.compiler.target>1.7</maven.compiler.target>
+        <maven.compiler.source>1.7</maven.compiler.source>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>in.pratanumandal</groupId>
+            <artifactId>unique4j</artifactId>
+            <version>1.5</version>
+        </dependency>
+        <dependency>
+            <groupId>com.kohlschutter.junixsocket</groupId>
+            <artifactId>junixsocket-core</artifactId>
+            <version>2.4.0</version>
+            <type>pom</type>
+        </dependency>
+        <dependency>
+            <groupId>com.kohlschutter.junixsocket</groupId>
+            <artifactId>junixsocket-server</artifactId>
+            <version>2.4.0</version>
+        </dependency>
+    </dependencies>
+</project>

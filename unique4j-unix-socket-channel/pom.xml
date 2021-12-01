@@ -1,0 +1,29 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>in.pratanumandal</groupId>
+        <artifactId>unique4j-parent</artifactId>
+        <version>1.5</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>unique4j-unix-socket-channel</artifactId>
+    <name>Unique4j Unix SocketChannel Implementation</name>
+    <description>Unique4j IPC implementation using Java 16+ Unix SocketChannels</description>
+
+    <properties>
+        <maven.compiler.target>16</maven.compiler.target>
+        <maven.compiler.source>16</maven.compiler.source>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>in.pratanumandal</groupId>
+            <artifactId>unique4j</artifactId>
+            <version>1.5</version>
+        </dependency>
+    </dependencies>
+</project>

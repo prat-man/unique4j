@@ -4,9 +4,9 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>in.pratanumandal</groupId>
-	<artifactId>unique4j</artifactId>
+	<artifactId>unique4j-parent</artifactId>
 	<version>1.5</version>
-	<packaging>jar</packaging>
+	<packaging>pom</packaging>
 
 	<name>Unique4j</name>
 	<url>https://github.com/prat-man/unique4j</url>
@@ -38,70 +38,14 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
-	<dependencies>
-		<dependency>
-			<groupId>com.google.code.gson</groupId>
-			<artifactId>gson</artifactId>
-			<version>2.8.6</version>
-		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.13.1</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>commons-io</groupId>
-			<artifactId>commons-io</artifactId>
-			<version>2.7</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.kohlschutter.junixsocket</groupId>
-			<artifactId>junixsocket-core</artifactId>
-			<version>2.4.0</version>
-			<type>pom</type>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.kohlschutter.junixsocket</groupId>
-			<artifactId>junixsocket-server</artifactId>
-			<version>2.4.0</version>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
+	<modules>
+		<module>unique4j-tests</module>
+		<!-- Last module should be one we want to deploy, as per documentation -->
+		<module>unique4j</module>
+	</modules>
 
 	<build>
 		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.8.1</version>
-				<executions>
-					<execution>
-						<id>default-compile</id>
-						<configuration>
-							<compilerArguments>
-								<source>1.7</source>
-								<target>1.7</target>
-							</compilerArguments>
-						</configuration>
-					</execution>
-					<execution>
-						<id>default-testCompile</id>
-						<configuration>
-							<compilerArguments>
-								<source>16</source>
-								<target>16</target>
-							</compilerArguments>
-						</configuration>
-					</execution>
-				</executions>
-				<configuration>
-					<source>16</source>
-					<target>16</target>
-				</configuration>
-			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-deploy-plugin</artifactId>
@@ -126,32 +70,8 @@
 			    <configuration>
 			    	<serverId>ossrh</serverId>
 			    	<nexusUrl>https://oss.sonatype.org</nexusUrl>
+					<skipNexusStagingDeployMojo>true</skipNexusStagingDeployMojo>
 			    </configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-shade-plugin</artifactId>
-				<version>3.2.2</version>
-				<configuration>
-					<outputDirectory>${project.build.directory}/original</outputDirectory>
-					<createDependencyReducedPom>false</createDependencyReducedPom>
-					<filters>
-						<filter>
-							<artifact>*:*</artifact>
-							<excludes>
-								<exclude>module-info.class</exclude>
-							</excludes>
-						</filter>
-					</filters>
-				</configuration>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>shade</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -228,5 +148,4 @@
 			</build>
 		</profile>
 	</profiles>
-
 </project>
